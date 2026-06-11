@@ -1,0 +1,9 @@
+/node_modules
+/dist
+/out-tsc
+/.angular
+.DS_Store
+npm-debug.log
+yarn-error.log
+*.tsbuildinfo
+.env
