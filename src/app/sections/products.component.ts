@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, computed, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, computed, inject } from '@angular/core';
 import { I18nService } from '../core/i18n/i18n.service';
 import { MotionService } from '../core/motion/motion.service';
 import { SectionHeadingComponent } from '../shared/components/section-heading.component';
@@ -115,11 +115,12 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
     `,
   ],
 })
-export class ProductsComponent implements AfterViewInit {
+export class ProductsComponent implements AfterViewInit, OnDestroy {
   private readonly i18n = inject(I18nService);
   private readonly motion = inject(MotionService);
   private readonly host = inject(ElementRef) as ElementRef<HTMLElement>;
   readonly t = this.i18n.t;
+  private readonly tiltCleanups: Array<() => void> = [];
 
   ngAfterViewInit(): void {
     const cards = this.host.nativeElement.querySelectorAll('.product') as NodeListOf<HTMLElement>;
@@ -127,6 +128,11 @@ export class ProductsComponent implements AfterViewInit {
     if (this.motion.enabled && !matchMedia('(hover: none)').matches) {
       cards.forEach((card) => this.attachTilt(card));
     }
+  }
+
+  ngOnDestroy(): void {
+    this.tiltCleanups.forEach((fn) => fn());
+    this.tiltCleanups.length = 0;
   }
 
   private attachTilt(card: HTMLElement): void {
@@ -140,6 +146,10 @@ export class ProductsComponent implements AfterViewInit {
     const onLeave = (): void => { card.style.transform = ''; };
     card.addEventListener('mousemove', onMove);
     card.addEventListener('mouseleave', onLeave);
+    this.tiltCleanups.push(() => {
+      card.removeEventListener('mousemove', onMove);
+      card.removeEventListener('mouseleave', onLeave);
+    });
   }
 
   private readonly meta = [
