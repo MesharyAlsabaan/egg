@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, signal } from '@angular/core';
 import {
   FormBuilder,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { I18nService } from '../core/i18n/i18n.service';
+import { MotionService } from '../core/motion/motion.service';
 import { RevealDirective } from '../shared/directives/reveal.directive';
 
 @Component({
@@ -21,25 +22,25 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
           <p class="lead">{{ t().contact.desc }}</p>
 
           <ul class="contact__list">
-            <li>
+            <li data-reveal>
               <span class="contact__icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
               </span>
               <div><strong>{{ t().contact.addressLabel }}</strong><span>{{ t().contact.address }}</span></div>
             </li>
-            <li>
+            <li data-reveal>
               <span class="contact__icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2Z"/></svg>
               </span>
               <div><strong>{{ t().contact.phoneLabel }}</strong><a href="tel:+966507488650" dir="ltr">{{ t().contact.phone }}</a></div>
             </li>
-            <li>
+            <li data-reveal>
               <span class="contact__icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
               </span>
               <div><strong>{{ t().contact.emailLabel }}</strong><a href="mailto:AL-HOMODI@HOTMAIL.COM">{{ t().contact.email }}</a></div>
             </li>
-            <li>
+            <li data-reveal>
               <span class="contact__icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
               </span>
@@ -68,12 +69,12 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
             </div>
           } @else {
             <form class="contact__form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-              <div class="field">
+              <div class="field" data-reveal>
                 <label for="name">{{ t().contact.formName }}</label>
                 <input id="name" type="text" formControlName="name" [class.invalid]="invalid('name')" />
                 @if (invalid('name')) { <small>•</small> }
               </div>
-              <div class="field-row">
+              <div class="field-row" data-reveal>
                 <div class="field">
                   <label for="email">{{ t().contact.formEmail }}</label>
                   <input id="email" type="email" formControlName="email" [class.invalid]="invalid('email')" />
@@ -83,11 +84,11 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
                   <input id="phone" type="tel" formControlName="phone" dir="ltr" />
                 </div>
               </div>
-              <div class="field">
+              <div class="field" data-reveal>
                 <label for="message">{{ t().contact.formMessage }}</label>
                 <textarea id="message" rows="5" formControlName="message" [class.invalid]="invalid('message')"></textarea>
               </div>
-              <button type="submit" class="btn contact__submit">
+              <button type="submit" class="btn contact__submit" data-reveal>
                 {{ t().contact.formSubmit }}
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
               </button>
@@ -99,10 +100,18 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
   `,
   styleUrl: './contact.component.scss',
 })
-export class ContactComponent {
+export class ContactComponent implements AfterViewInit {
   private readonly fb = inject(FormBuilder);
   readonly t = inject(I18nService).t;
   readonly submitted = signal(false);
+
+  private readonly motion = inject(MotionService);
+  private readonly host = inject(ElementRef<HTMLElement>);
+
+  ngAfterViewInit(): void {
+    const items = this.host.nativeElement.querySelectorAll('[data-reveal]') as NodeListOf<HTMLElement>;
+    this.motion.revealStagger(items, { stagger: 0.1 });
+  }
 
   /** Company WhatsApp number (digits only), from the carton: +966 50 748 8650. */
   private readonly whatsappNumber = '966507488650';

@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject } from '@angular/core';
 import { I18nService } from '../core/i18n/i18n.service';
+import { MotionService } from '../core/motion/motion.service';
 import { LogoComponent } from '../shared/components/logo.component';
 
 @Component({
@@ -10,7 +11,7 @@ import { LogoComponent } from '../shared/components/logo.component';
   template: `
     <footer class="footer">
       <div class="container footer__top">
-        <div class="footer__brand">
+        <div class="footer__brand" data-reveal>
           <app-logo [light]="true" />
           <p>{{ t().footer.about }}</p>
           <div class="footer__social" [attr.aria-label]="t().footer.social">
@@ -20,7 +21,7 @@ import { LogoComponent } from '../shared/components/logo.component';
           </div>
         </div>
 
-        <nav class="footer__col" aria-label="Quick links">
+        <nav class="footer__col" aria-label="Quick links" data-reveal>
           <h4>{{ t().footer.quick }}</h4>
           <ul>
             @for (link of links; track link.id) {
@@ -29,7 +30,7 @@ import { LogoComponent } from '../shared/components/logo.component';
           </ul>
         </nav>
 
-        <div class="footer__col">
+        <div class="footer__col" data-reveal>
           <h4>{{ t().footer.contact }}</h4>
           <ul class="footer__contact">
             <li><span>{{ t().contact.address }}</span></li>
@@ -39,7 +40,7 @@ import { LogoComponent } from '../shared/components/logo.component';
           </ul>
         </div>
 
-        <div class="footer__col footer__newsletter">
+        <div class="footer__col footer__newsletter" data-reveal>
           <h4>{{ t().footer.made }}</h4>
           <a href="#contact" class="btn btn--green">{{ t().nav.cta }}</a>
         </div>
@@ -122,9 +123,17 @@ import { LogoComponent } from '../shared/components/logo.component';
     `,
   ],
 })
-export class FooterComponent {
+export class FooterComponent implements AfterViewInit {
   readonly t = inject(I18nService).t;
   readonly year = 2026;
+
+  private readonly motion = inject(MotionService);
+  private readonly host = inject(ElementRef<HTMLElement>);
+
+  ngAfterViewInit(): void {
+    const cols = this.host.nativeElement.querySelectorAll('[data-reveal]') as NodeListOf<HTMLElement>;
+    this.motion.revealStagger(cols, { stagger: 0.13 });
+  }
 
   readonly links = [
     { id: 'about', key: 'about' as const },

@@ -112,11 +112,12 @@
     &::placeholder {
       color: var(--muted);
     }
-    &:focus {
+    &:focus,
+    &:focus-visible {
       outline: none;
       border-color: var(--brand);
-      background: #fff;
-      box-shadow: var(--ring);
+      background: var(--white);
+      box-shadow: var(--ring), 0 0 0 4px rgba(224, 123, 38, 0.12);
     }
     &.invalid {
       border-color: #e0584f;
