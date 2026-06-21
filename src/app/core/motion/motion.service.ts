@@ -16,6 +16,7 @@ export class MotionService {
   private rafId = 0;
   private started = false;
   private readonly cleanups: Array<() => void> = [];
+  private mm?: ReturnType<typeof gsap.matchMedia>;
 
   private get isBrowser(): boolean {
     return typeof window !== 'undefined' && typeof document !== 'undefined';
@@ -55,8 +56,11 @@ export class MotionService {
 
   destroy(): void {
     cancelAnimationFrame(this.rafId);
+    this.rafId = 0;
     this.cleanups.forEach((fn) => fn());
     this.cleanups.length = 0;
+    this.mm?.revert();
+    this.mm = undefined;
     ScrollTrigger.getAll().forEach((t) => t.kill());
     this.lenis?.destroy();
     this.lenis = undefined;
@@ -161,24 +165,23 @@ export class MotionService {
   }): void {
     if (!this.enabled || !opts.pin || !opts.track) return;
     const minWidth = opts.minWidth ?? 861;
-    ScrollTrigger.matchMedia({
-      [`(min-width: ${minWidth}px)`]: () => {
-        const distance = opts.track.scrollWidth - opts.pin.clientWidth;
-        if (distance <= 0) return;
-        const tween = gsap.to(opts.track, {
-          x: () => -distance * this.dirSign,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: opts.pin,
-            start: 'top top',
-            end: () => `+=${distance}`,
-            pin: true,
-            scrub: 1,
-            invalidateOnRefresh: true,
-          },
-        });
-        return () => tween.kill();
-      },
+    this.mm = this.mm ?? gsap.matchMedia();
+    this.mm.add(`(min-width: ${minWidth}px)`, () => {
+      const distance = opts.track.scrollWidth - opts.pin.clientWidth;
+      if (distance <= 0) return;
+      const tween = gsap.to(opts.track, {
+        x: () => -distance * this.dirSign,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: opts.pin,
+          start: 'top top',
+          end: () => `+=${distance}`,
+          pin: true,
+          scrub: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+      return () => tween.kill();
     });
   }
 
