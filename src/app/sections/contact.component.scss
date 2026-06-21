@@ -139,7 +139,7 @@
     height: 18px;
   }
 }
-html[dir='rtl'] .contact__submit svg {
+:host-context([dir='rtl']) .contact__submit svg {
   transform: scaleX(-1);
 }
 

@@ -107,8 +107,8 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
         svg { width: 16px; height: 16px; transition: transform 0.3s var(--ease); }
         &:hover svg { transform: translateX(3px); }
       }
-      html[dir='rtl'] .product__link svg { transform: scaleX(-1); }
-      html[dir='rtl'] .product__link:hover svg { transform: scaleX(-1) translateX(3px); }
+      :host-context([dir='rtl']) .product__link svg { transform: scaleX(-1); }
+      :host-context([dir='rtl']) .product__link:hover svg { transform: scaleX(-1) translateX(3px); }
 
       @media (max-width: 860px) { .products { grid-template-columns: repeat(2, 1fr); max-width: 620px; } }
       @media (max-width: 520px) { .products { grid-template-columns: 1fr; max-width: 360px; } }

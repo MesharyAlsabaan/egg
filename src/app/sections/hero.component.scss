@@ -29,7 +29,7 @@
     radial-gradient(120% 90% at 80% 10%, rgba(244, 180, 0, 0.22), transparent 55%);
 }
 
-html[dir='rtl'] .hero__scrim {
+:host-context([dir='rtl']) .hero__scrim {
   background:
     linear-gradient(245deg, rgba(43, 23, 8, 0.82) 0%, rgba(43, 23, 8, 0.45) 45%, rgba(43, 23, 8, 0.15) 100%),
     radial-gradient(120% 90% at 20% 10%, rgba(244, 180, 0, 0.22), transparent 55%);
@@ -115,7 +115,7 @@ html[dir='rtl'] .hero__scrim {
   }
 }
 
-html[dir='rtl'] .hero__actions svg {
+:host-context([dir='rtl']) .hero__actions svg {
   transform: scaleX(-1);
 }
 

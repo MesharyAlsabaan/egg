@@ -43,7 +43,7 @@ import { I18nService } from '../core/i18n/i18n.service';
         from { transform: translateX(0); }
         to { transform: translateX(-50%); }
       }
-      html[dir='rtl'] .marquee__row { animation-direction: reverse; }
+      :host-context([dir='rtl']) .marquee__row { animation-direction: reverse; }
       @media (prefers-reduced-motion: reduce) {
         .marquee__row { animation: none; flex-wrap: wrap; white-space: normal; justify-content: center; }
       }
