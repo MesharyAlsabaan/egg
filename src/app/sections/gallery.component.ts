@@ -1,11 +1,14 @@
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   HostListener,
   inject,
   signal,
 } from '@angular/core';
 import { I18nService } from '../core/i18n/i18n.service';
+import { MotionService } from '../core/motion/motion.service';
 import { SectionHeadingComponent } from '../shared/components/section-heading.component';
 import { RevealDirective } from '../shared/directives/reveal.directive';
 
@@ -182,8 +185,10 @@ interface GalleryImage {
     `,
   ],
 })
-export class GalleryComponent {
+export class GalleryComponent implements AfterViewInit {
   private readonly i18n = inject(I18nService);
+  private readonly motion = inject(MotionService);
+  private readonly host = inject(ElementRef<HTMLElement>);
   readonly t = this.i18n.t;
 
   readonly current = signal<number | null>(null);
@@ -199,6 +204,11 @@ export class GalleryComponent {
     { src: 'assets/images/facility-aerial.jpg', alt: 'Aerial view of the production facility', span: '' },
     { src: 'assets/images/solar-panels.jpg', alt: 'On-site solar energy array', span: '' },
   ];
+
+  ngAfterViewInit(): void {
+    const tiles = this.host.nativeElement.querySelectorAll('.gallery__item') as NodeListOf<HTMLElement>;
+    this.motion.revealStagger(tiles, { stagger: 0.07, y: 24 });
+  }
 
   open(i: number): void {
     this.current.set(i);
