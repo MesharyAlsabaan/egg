@@ -1,6 +1,14 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  viewChild,
+} from '@angular/core';
 import { I18nService } from '../core/i18n/i18n.service';
 import { RevealDirective } from '../shared/directives/reveal.directive';
+import { MotionService } from '../core/motion/motion.service';
 
 @Component({
   selector: 'app-about',
@@ -11,7 +19,7 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
     <section id="about" class="section">
       <div class="container about">
         <div class="about__media" appReveal>
-          <figure class="about__img about__img--main">
+          <figure class="about__img about__img--main" #aboutImg>
             <img src="assets/images/farm-overview.jpg" alt="Aerial view of Family Eggs farm and facilities" loading="lazy" />
           </figure>
           <figure class="about__img about__img--sub">
@@ -24,13 +32,13 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
         </div>
 
         <div class="about__body">
-          <span class="eyebrow" appReveal>{{ t().about.eyebrow }}</span>
-          <h2 class="h-section" appReveal="1">{{ t().about.title }}</h2>
-          <p class="lead" appReveal="2">{{ t().about.story }}</p>
+          <span class="eyebrow" appReveal data-reveal>{{ t().about.eyebrow }}</span>
+          <h2 class="h-section" appReveal="1" data-reveal>{{ t().about.title }}</h2>
+          <p class="lead" appReveal="2" data-reveal>{{ t().about.story }}</p>
 
           <div class="about__cards">
             @for (card of cards(); track card.title; let i = $index) {
-              <article class="about__card" appReveal [appReveal]="i + 1">
+              <article class="about__card" appReveal [appReveal]="i + 1" data-reveal>
                 <span class="about__card-icon" [innerHTML]="card.icon"></span>
                 <h3>{{ card.title }}</h3>
                 <p>{{ card.text }}</p>
@@ -127,9 +135,20 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
     `,
   ],
 })
-export class AboutComponent {
+export class AboutComponent implements AfterViewInit {
   readonly i18n = inject(I18nService);
   readonly t = this.i18n.t;
+
+  private readonly motion = inject(MotionService);
+  private readonly host = inject(ElementRef<HTMLElement>);
+  private readonly aboutImg = viewChild<ElementRef<HTMLElement>>('aboutImg');
+
+  ngAfterViewInit(): void {
+    const img = this.aboutImg()?.nativeElement;
+    if (img) this.motion.parallax(img, { y: 12 });
+    const items = this.host.nativeElement.querySelectorAll('[data-reveal]') as NodeListOf<HTMLElement>;
+    this.motion.revealStagger(items, { stagger: 0.1 });
+  }
 
   private readonly icons = {
     mission:
