@@ -1,5 +1,14 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  computed,
+  inject,
+  viewChild,
+} from '@angular/core';
 import { I18nService } from '../core/i18n/i18n.service';
+import { MotionService } from '../core/motion/motion.service';
 import { SectionHeadingComponent } from '../shared/components/section-heading.component';
 import { RevealDirective } from '../shared/directives/reveal.directive';
 
@@ -17,35 +26,40 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
           [desc]="t().process.desc"
         />
 
-        <ol class="timeline">
-          <span class="timeline__track" aria-hidden="true"></span>
-          @for (step of steps(); track step.title; let i = $index) {
-            <li class="timeline__step" appReveal [appReveal]="i + 1">
-              <span class="timeline__node">
-                <span class="timeline__num">{{ i + 1 }}</span>
-                <span class="timeline__icon" [innerHTML]="step.icon"></span>
-              </span>
-              <h3>{{ step.title }}</h3>
-              <p>{{ step.desc }}</p>
-            </li>
-          }
-        </ol>
+        <div class="process__pin" #pin>
+          <ol class="timeline" #track>
+            <span class="timeline__track" aria-hidden="true"></span>
+            @for (step of steps(); track step.title; let i = $index) {
+              <li class="timeline__step" appReveal [appReveal]="i + 1">
+                <span class="timeline__node">
+                  <span class="timeline__num">{{ i + 1 }}</span>
+                  <span class="timeline__icon" [innerHTML]="step.icon"></span>
+                </span>
+                <h3>{{ step.title }}</h3>
+                <p>{{ step.desc }}</p>
+              </li>
+            }
+          </ol>
+        </div>
       </div>
     </section>
   `,
   styles: [
     `
+      .process__pin { overflow: hidden; }
+
       .timeline {
         position: relative;
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
+        display: flex;
+        flex-wrap: nowrap;
         gap: 16px;
+        width: max-content;
         counter-reset: step;
       }
       .timeline__track {
         position: absolute;
         top: 36px;
-        inset-inline: 10%;
+        inset-inline: 36px;
         height: 3px;
         background: repeating-linear-gradient(
           90deg,
@@ -55,6 +69,7 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
         opacity: 0.4;
       }
       .timeline__step {
+        flex: 0 0 clamp(240px, 28vw, 320px);
         position: relative;
         text-align: center;
         display: flex;
@@ -97,7 +112,8 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
         box-shadow: 0 6px 14px -6px rgba(224, 123, 38, 0.8);
       }
       @media (max-width: 860px) {
-        .timeline { grid-template-columns: 1fr; gap: 8px; max-width: 460px; margin-inline: auto; }
+        .timeline { display: grid; width: auto; grid-template-columns: 1fr; gap: 8px; max-width: 460px; margin-inline: auto; }
+        .timeline__step { flex: none; }
         .timeline__track {
           inset-inline-start: 35px;
           inset-inline-end: auto;
@@ -120,9 +136,13 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
     `,
   ],
 })
-export class ProcessComponent {
+export class ProcessComponent implements AfterViewInit {
   private readonly i18n = inject(I18nService);
+  private readonly motion = inject(MotionService);
   readonly t = this.i18n.t;
+
+  private readonly pin = viewChild<ElementRef<HTMLElement>>('pin');
+  private readonly track = viewChild<ElementRef<HTMLElement>>('track');
 
   private readonly icons = [
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V10l9-7 9 7v11"/><path d="M9 21v-6h6v6"/></svg>',
@@ -135,4 +155,10 @@ export class ProcessComponent {
   readonly steps = computed(() =>
     this.t().process.steps.map((step, i) => ({ ...step, icon: this.icons[i] })),
   );
+
+  ngAfterViewInit(): void {
+    const pin = this.pin()?.nativeElement;
+    const track = this.track()?.nativeElement;
+    if (pin && track) this.motion.pinHorizontal({ pin, track, minWidth: 861 });
+  }
 }
