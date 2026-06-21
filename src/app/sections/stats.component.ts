@@ -51,7 +51,9 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
         position: absolute;
         inset: 0;
         z-index: -2;
-        img { width: 100%; height: 100%; object-fit: cover; }
+        /* Oversized + offset so the parallax travel never exposes a seam at
+           the section edges. */
+        img { position: absolute; top: -15%; left: 0; width: 100%; height: 130%; object-fit: cover; }
         &::after {
           content: '';
           position: absolute;
@@ -118,7 +120,7 @@ export class StatsComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     const bg = this.statsBg()?.nativeElement;
-    if (bg) this.motion.parallax(bg, { y: 14 });
+    if (bg) this.motion.parallax(bg, { y: 10 });
 
     const items = this.host.nativeElement.querySelectorAll('.stats__item') as NodeListOf<HTMLElement>;
     this.motion.revealStagger(items, { stagger: 0.12, y: 30 });
