@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, computed, ElementRef, inject } from '@angular/core';
 import { I18nService } from '../core/i18n/i18n.service';
+import { MotionService } from '../core/motion/motion.service';
 import { SectionHeadingComponent } from '../shared/components/section-heading.component';
 import { RevealDirective } from '../shared/directives/reveal.directive';
 
@@ -65,7 +66,7 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
         ::ng-deep svg { width: 30px; height: 30px; }
       }
       .why__card:hover .why__icon {
-        transform: rotate(-6deg) scale(1.06);
+        transform: translateY(-4px) scale(1.08);
       }
       @media (max-width: 1040px) { .why { grid-template-columns: repeat(3, 1fr); } }
       @media (max-width: 680px) { .why { grid-template-columns: repeat(2, 1fr); } }
@@ -73,9 +74,16 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
     `,
   ],
 })
-export class WhyComponent {
+export class WhyComponent implements AfterViewInit {
   private readonly i18n = inject(I18nService);
+  private readonly motion = inject(MotionService);
+  private readonly host = inject(ElementRef<HTMLElement>);
   readonly t = this.i18n.t;
+
+  ngAfterViewInit(): void {
+    const cards = this.host.nativeElement.querySelectorAll('.why__card') as NodeListOf<HTMLElement>;
+    this.motion.revealStagger(cards, { stagger: 0.09, y: 30 });
+  }
 
   private readonly icons = [
     // Fresh daily — sun/sunrise
