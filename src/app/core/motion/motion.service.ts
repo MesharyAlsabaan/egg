@@ -69,14 +69,21 @@ export class MotionService {
 
   reveal(el: HTMLElement, opts: RevealOpts = {}): void {
     if (!this.enabled || !el) return;
-    gsap.from(el, {
-      opacity: 0,
-      y: opts.y ?? 28,
-      duration: opts.duration ?? 0.8,
-      delay: opts.delay ?? 0,
-      ease: 'power3.out',
-      scrollTrigger: { trigger: el, start: opts.start ?? 'top 85%' },
-    });
+    // fromTo with an explicit visible end state: using from() would read the
+    // element's *current* opacity as the end value, which is 0 when a `.reveal`
+    // (appReveal) baseline is present — animating 0→0 and leaving it invisible.
+    gsap.fromTo(
+      el,
+      { opacity: 0, y: opts.y ?? 28 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: opts.duration ?? 0.8,
+        delay: opts.delay ?? 0,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: el, start: opts.start ?? 'top 85%' },
+      },
+    );
   }
 
   revealStagger(
@@ -84,14 +91,20 @@ export class MotionService {
     opts: RevealOpts & { stagger?: number } = {},
   ): void {
     if (!this.enabled || !els.length) return;
-    gsap.from(Array.from(els), {
-      opacity: 0,
-      y: opts.y ?? 28,
-      duration: opts.duration ?? 0.7,
-      ease: 'power3.out',
-      stagger: opts.stagger ?? 0.12,
-      scrollTrigger: { trigger: els[0], start: opts.start ?? 'top 85%' },
-    });
+    // fromTo (explicit end state) so a `.reveal`/appReveal opacity:0 baseline
+    // cannot poison the captured end value and leave elements invisible.
+    gsap.fromTo(
+      Array.from(els),
+      { opacity: 0, y: opts.y ?? 28 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: opts.duration ?? 0.7,
+        ease: 'power3.out',
+        stagger: opts.stagger ?? 0.12,
+        scrollTrigger: { trigger: els[0], start: opts.start ?? 'top 85%' },
+      },
+    );
   }
 
   parallax(el: HTMLElement, opts: { y?: number; x?: number } = {}): void {
