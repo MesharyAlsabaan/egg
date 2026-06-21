@@ -1,5 +1,13 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  viewChild,
+} from '@angular/core';
 import { I18nService } from '../core/i18n/i18n.service';
+import { MotionService } from '../core/motion/motion.service';
 import { CountUpDirective } from '../shared/directives/count-up.directive';
 import { RevealDirective } from '../shared/directives/reveal.directive';
 
@@ -11,7 +19,7 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
   template: `
     <section class="stats">
       <div class="stats__bg">
-        <img src="assets/images/facility-aerial.jpg" alt="" aria-hidden="true" loading="lazy" />
+        <img #statsBg src="assets/images/facility-aerial.jpg" alt="" aria-hidden="true" loading="lazy" />
       </div>
       <div class="container">
         <h2 class="stats__title h-section" appReveal>{{ t().stats.title }}</h2>
@@ -49,6 +57,17 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
           position: absolute;
           inset: 0;
           background: linear-gradient(135deg, rgba(178, 90, 22, 0.94), rgba(33, 26, 19, 0.9));
+          background-size: 200% 200%;
+          animation: statsSheen 12s ease-in-out infinite alternate;
+        }
+      }
+      @keyframes statsSheen {
+        0%   { background-position: 0% 0%; }
+        100% { background-position: 100% 100%; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .stats__bg::after {
+          animation: none;
         }
       }
       .stats__title {
@@ -90,6 +109,18 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
     `,
   ],
 })
-export class StatsComponent {
+export class StatsComponent implements AfterViewInit {
   readonly t = inject(I18nService).t;
+  private readonly motion = inject(MotionService);
+  private readonly host = inject(ElementRef) as ElementRef<HTMLElement>;
+
+  private readonly statsBg = viewChild<ElementRef<HTMLImageElement>>('statsBg');
+
+  ngAfterViewInit(): void {
+    const bg = this.statsBg()?.nativeElement;
+    if (bg) this.motion.parallax(bg, { y: 14 });
+
+    const items = this.host.nativeElement.querySelectorAll('.stats__item') as NodeListOf<HTMLElement>;
+    this.motion.revealStagger(items, { stagger: 0.12, y: 30 });
+  }
 }
