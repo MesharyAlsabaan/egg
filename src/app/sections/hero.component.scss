@@ -213,3 +213,38 @@ html[dir='rtl'] .hero__actions svg {
     flex: 1 1 auto;
   }
 }
+
+.hero__blobs {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.hero__blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.5;
+  mix-blend-mode: screen;
+  animation: blobdrift 14s var(--ease) infinite alternate;
+}
+.hero__blob--1 {
+  width: 420px; height: 420px;
+  top: -80px; inset-inline-end: -60px;
+  background: radial-gradient(circle, rgba(244, 180, 0, 0.55), transparent 70%);
+}
+.hero__blob--2 {
+  width: 360px; height: 360px;
+  bottom: -100px; inset-inline-start: 10%;
+  background: radial-gradient(circle, rgba(224, 123, 38, 0.45), transparent 70%);
+  animation-delay: 3s;
+}
+@keyframes blobdrift {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(30px, -24px) scale(1.12); }
+}
+.hero__title-main { display: block; }
+@media (prefers-reduced-motion: reduce) {
+  .hero__blob { animation: none; }
+}
