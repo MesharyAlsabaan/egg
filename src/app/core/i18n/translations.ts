@@ -268,7 +268,7 @@ const en: Dictionary = {
     rights: 'All rights reserved.',
     made: 'Fresh from our family to yours.',
   },
-  marquee: ['Farm Fresh Daily', 'ISO Certified', '50M+ Eggs / Year', 'Solar Powered Facilities', 'Graded & Inspected', 'Trusted Since 1998'],
+  marquee: ['Farm Fresh Daily', 'ISO 22000 Certified', 'HACCP', 'SFDA Compliant', 'Halal Certified', 'Solar-Powered Farms', '100% Saudi Eggs', 'Graded & Inspected'],
 };
 
 const ar: Dictionary = {
@@ -402,7 +402,7 @@ const ar: Dictionary = {
     rights: 'جميع الحقوق محفوظة.',
     made: 'طازج من عائلتنا إلى عائلتك.',
   },
-  marquee: ['طازج يومياً من المزرعة', 'معتمد ISO', '+50 مليون بيضة سنوياً', 'منشآت تعمل بالطاقة الشمسية', 'مفروز ومفحوص', 'موثوق منذ 1998'],
+  marquee: ['طازج يومياً من المزرعة', 'آيزو 22000', 'هاسب', 'متوافق مع الغذاء والدواء', 'حلال معتمد', 'مزارع بالطاقة الشمسية', 'بيض سعودي 100%', 'مفروز ومفحوص'],
 };
 
 export const CONTENT: Record<Lang, Dictionary> = { en, ar };
