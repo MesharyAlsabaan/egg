@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, computed, inject } from '@angular/core';
 import { I18nService } from '../core/i18n/i18n.service';
+import { MotionService } from '../core/motion/motion.service';
 import { SectionHeadingComponent } from '../shared/components/section-heading.component';
 import { RevealDirective } from '../shared/directives/reveal.directive';
 
@@ -55,7 +56,6 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
         flex-direction: column;
       }
       .product:hover {
-        transform: translateY(-8px);
         box-shadow: var(--shadow-lg);
         border-color: transparent;
       }
@@ -115,9 +115,32 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
     `,
   ],
 })
-export class ProductsComponent {
+export class ProductsComponent implements AfterViewInit {
   private readonly i18n = inject(I18nService);
+  private readonly motion = inject(MotionService);
+  private readonly host = inject(ElementRef) as ElementRef<HTMLElement>;
   readonly t = this.i18n.t;
+
+  ngAfterViewInit(): void {
+    const cards = this.host.nativeElement.querySelectorAll('.product') as NodeListOf<HTMLElement>;
+    this.motion.revealStagger(cards, { stagger: 0.1, y: 36 });
+    if (this.motion.enabled && !matchMedia('(hover: none)').matches) {
+      cards.forEach((card) => this.attachTilt(card));
+    }
+  }
+
+  private attachTilt(card: HTMLElement): void {
+    const onMove = (e: MouseEvent): void => {
+      const r = card.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width - 0.5;
+      const py = (e.clientY - r.top) / r.height - 0.5;
+      card.style.transform =
+        `perspective(800px) rotateY(${px * 8}deg) rotateX(${-py * 8}deg) translateY(-8px)`;
+    };
+    const onLeave = (): void => { card.style.transform = ''; };
+    card.addEventListener('mousemove', onMove);
+    card.addEventListener('mouseleave', onLeave);
+  }
 
   private readonly meta = [
     { img: 'assets/images/product-white-cartons.jpg', filter: '' },
