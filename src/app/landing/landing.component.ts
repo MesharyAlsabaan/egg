@@ -80,7 +80,6 @@ import { MotionService } from '../core/motion/motion.service';
         transform: translateY(20px) scale(0.8);
         pointer-events: none;
         transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
-        position: relative;
         isolation: isolate;
         svg { width: 24px; height: 24px; }
         &.show {
