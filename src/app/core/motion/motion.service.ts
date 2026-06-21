@@ -52,6 +52,17 @@ export class MotionService {
       this.rafId = requestAnimationFrame(raf);
     };
     this.rafId = requestAnimationFrame(raf);
+
+    // Triggers (including the Process pin) are created in section components'
+    // ngAfterViewInit, which runs after this (the page calls init() in
+    // ngOnInit). Recalculate their positions once layout/images settle so the
+    // pin measures correctly instead of sticking at progress=1.
+    const refresh = (): void => ScrollTrigger.refresh();
+    if (document.readyState === 'complete') {
+      requestAnimationFrame(refresh);
+    } else {
+      window.addEventListener('load', refresh, { once: true });
+    }
   }
 
   destroy(): void {

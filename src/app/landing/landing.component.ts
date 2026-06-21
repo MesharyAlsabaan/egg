@@ -1,10 +1,10 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   ElementRef,
   HostListener,
   OnDestroy,
+  OnInit,
   inject,
   signal,
 } from '@angular/core';
@@ -107,13 +107,16 @@ import { MotionService } from '../core/motion/motion.service';
     `,
   ],
 })
-export class LandingComponent implements AfterViewInit, OnDestroy {
+export class LandingComponent implements OnInit, OnDestroy {
   private readonly motion = inject(MotionService);
   private readonly host = inject(ElementRef<HTMLElement>);
   readonly showTop = signal(false);
   readonly progress = signal(0);
 
-  ngAfterViewInit(): void {
+  // init() runs in ngOnInit (not ngAfterViewInit) so the GSAP plugin is
+  // registered and Lenis is running BEFORE child section components wire their
+  // ScrollTriggers in their own ngAfterViewInit (children run before parent's).
+  ngOnInit(): void {
     this.motion.init();
     this.motion.onScrollProgress((p) => this.progress.set(p));
   }

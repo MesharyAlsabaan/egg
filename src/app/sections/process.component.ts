@@ -46,7 +46,16 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
   `,
   styles: [
     `
-      .process__pin { overflow: hidden; }
+      /* Desktop: the pin holds a tall, vertically-centred band so the timeline
+         nodes sit comfortably in the viewport while scrubbing horizontally
+         (instead of being clipped at the top edge). */
+      .process__pin {
+        overflow: hidden;
+        min-height: min(64vh, 520px);
+        display: flex;
+        align-items: center;
+        padding-block: 24px;
+      }
 
       .timeline {
         position: relative;
@@ -112,6 +121,7 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
         box-shadow: 0 6px 14px -6px rgba(224, 123, 38, 0.8);
       }
       @media (max-width: 860px) {
+        .process__pin { overflow: visible; min-height: 0; display: block; padding-block: 0; }
         .timeline { display: grid; width: auto; grid-template-columns: 1fr; gap: 8px; max-width: 460px; margin-inline: auto; }
         .timeline__step { flex: none; }
         .timeline__track {
@@ -132,6 +142,13 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
         }
         .timeline__node { flex: none; }
         .timeline__step h3 { margin-top: 6px; }
+      }
+      /* Desktop + reduced motion: pin never scrolls, so wrap the steps
+         instead of clipping them behind overflow:hidden. */
+      @media (prefers-reduced-motion: reduce) and (min-width: 861px) {
+        .process__pin { overflow: visible; min-height: 0; display: block; padding-block: 0; }
+        .timeline { flex-wrap: wrap; width: auto; justify-content: center; row-gap: 40px; }
+        .timeline__track { display: none; }
       }
     `,
   ],
