@@ -106,6 +106,7 @@ export interface Dictionary {
     rights: string;
     made: string;
   };
+  marquee: string[];
 }
 
 const en: Dictionary = {
@@ -267,6 +268,7 @@ const en: Dictionary = {
     rights: 'All rights reserved.',
     made: 'Fresh from our family to yours.',
   },
+  marquee: ['Farm Fresh Daily', 'ISO Certified', '50M+ Eggs / Year', 'Solar Powered Facilities', 'Graded & Inspected', 'Trusted Since 1998'],
 };
 
 const ar: Dictionary = {
@@ -400,6 +402,7 @@ const ar: Dictionary = {
     rights: 'جميع الحقوق محفوظة.',
     made: 'طازج من عائلتنا إلى عائلتك.',
   },
+  marquee: ['طازج يومياً من المزرعة', 'معتمد ISO', '+50 مليون بيضة سنوياً', 'منشآت تعمل بالطاقة الشمسية', 'مفروز ومفحوص', 'موثوق منذ 1998'],
 };
 
 export const CONTENT: Record<Lang, Dictionary> = { en, ar };

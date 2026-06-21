@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { NavbarComponent } from '../sections/navbar.component';
 import { HeroComponent } from '../sections/hero.component';
+import { MarqueeComponent } from '../sections/marquee.component';
 import { AboutComponent } from '../sections/about.component';
 import { ProductsComponent } from '../sections/products.component';
 import { WhyComponent } from '../sections/why.component';
@@ -26,6 +27,7 @@ import { MotionService } from '../core/motion/motion.service';
   imports: [
     NavbarComponent,
     HeroComponent,
+    MarqueeComponent,
     AboutComponent,
     ProductsComponent,
     WhyComponent,
@@ -40,6 +42,7 @@ import { MotionService } from '../core/motion/motion.service';
     <app-navbar />
     <main id="main">
       <app-hero />
+      <app-marquee />
       <app-about />
       <app-products />
       <app-why />
