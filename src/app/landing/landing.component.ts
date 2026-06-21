@@ -1,7 +1,11 @@
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   HostListener,
+  OnDestroy,
+  inject,
   signal,
 } from '@angular/core';
 import { NavbarComponent } from '../sections/navbar.component';
@@ -14,6 +18,7 @@ import { StatsComponent } from '../sections/stats.component';
 import { GalleryComponent } from '../sections/gallery.component';
 import { ContactComponent } from '../sections/contact.component';
 import { FooterComponent } from '../sections/footer.component';
+import { MotionService } from '../core/motion/motion.service';
 
 @Component({
   selector: 'app-landing',
@@ -48,9 +53,11 @@ import { FooterComponent } from '../sections/footer.component';
     <button
       class="to-top"
       [class.show]="showTop()"
+      [style.--progress]="progress()"
       (click)="scrollTop()"
       aria-label="Back to top"
     >
+      <span class="to-top__ring" aria-hidden="true"></span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 6-6 6 6"/></svg>
     </button>
   `,
@@ -73,6 +80,8 @@ import { FooterComponent } from '../sections/footer.component';
         transform: translateY(20px) scale(0.8);
         pointer-events: none;
         transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+        position: relative;
+        isolation: isolate;
         svg { width: 24px; height: 24px; }
         &.show {
           opacity: 1;
@@ -81,11 +90,35 @@ import { FooterComponent } from '../sections/footer.component';
         }
         &:hover { transform: translateY(-3px); }
       }
+      .to-top__ring {
+        position: absolute;
+        inset: -4px;
+        border-radius: 50%;
+        background: conic-gradient(
+          var(--yolk) calc(var(--progress, 0) * 360deg),
+          rgba(255, 255, 255, 0.35) 0deg
+        );
+        -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 4px));
+                mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 4px));
+        z-index: -1;
+      }
     `,
   ],
 })
-export class LandingComponent {
+export class LandingComponent implements AfterViewInit, OnDestroy {
+  private readonly motion = inject(MotionService);
+  private readonly host = inject(ElementRef<HTMLElement>);
   readonly showTop = signal(false);
+  readonly progress = signal(0);
+
+  ngAfterViewInit(): void {
+    this.motion.init();
+    this.motion.onScrollProgress((p) => this.progress.set(p));
+  }
+
+  ngOnDestroy(): void {
+    this.motion.destroy();
+  }
 
   @HostListener('window:scroll')
   onScroll(): void {
