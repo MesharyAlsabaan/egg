@@ -87,10 +87,15 @@
   margin-top: 22px;
   color: #fff;
   text-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-  line-height: 1.05;
+  line-height: 1.18;
 
   .text-gradient {
     display: block;
+    // background-clip:text can shave Arabic descenders on a tight line box
+    padding-bottom: 0.08em;
+  }
+  .hero__title-main {
+    padding-bottom: 0.04em;
   }
 }
 

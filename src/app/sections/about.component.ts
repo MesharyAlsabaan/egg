@@ -18,19 +18,6 @@ import { MotionService } from '../core/motion/motion.service';
   template: `
     <section id="about" class="section">
       <div class="container about">
-        <div class="about__media" appReveal>
-          <figure class="about__img about__img--main" #aboutImg>
-            <img src="assets/images/farm-overview.jpg" alt="Aerial view of Family Eggs farm and facilities" loading="lazy" />
-          </figure>
-          <figure class="about__img about__img--sub">
-            <img src="assets/images/green-fields.jpg" alt="Green irrigated fields surrounding the farm" loading="lazy" />
-          </figure>
-          <div class="about__badge">
-            <strong>100%</strong>
-            <span>{{ i18n.isRtl() ? 'بيض سعودي' : 'Saudi eggs' }}</span>
-          </div>
-        </div>
-
         <div class="about__body">
           <span class="eyebrow" appReveal data-reveal>{{ t().about.eyebrow }}</span>
           <h2 class="h-section" appReveal="1" data-reveal>{{ t().about.title }}</h2>
@@ -46,6 +33,19 @@ import { MotionService } from '../core/motion/motion.service';
             }
           </div>
         </div>
+
+        <div class="about__media" appReveal>
+          <figure class="about__img about__img--main" #aboutImg>
+            <img src="assets/images/farm-overview.jpg" alt="Aerial view of Family Eggs farm and facilities" loading="lazy" />
+          </figure>
+          <figure class="about__img about__img--sub">
+            <img src="assets/images/green-fields.jpg" alt="Green irrigated fields surrounding the farm" loading="lazy" />
+          </figure>
+          <div class="about__badge">
+            <strong>100%</strong>
+            <span>{{ i18n.isRtl() ? 'بيض سعودي' : 'Saudi eggs' }}</span>
+          </div>
+        </div>
       </div>
     </section>
   `,
@@ -53,7 +53,7 @@ import { MotionService } from '../core/motion/motion.service';
     `
       .about {
         display: grid;
-        grid-template-columns: 0.9fr 1.1fr;
+        grid-template-columns: 1.1fr 0.9fr;
         gap: clamp(32px, 5vw, 64px);
         align-items: center;
       }

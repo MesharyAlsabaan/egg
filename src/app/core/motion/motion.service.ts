@@ -160,26 +160,30 @@ export class MotionService {
     if (!this.enabled || !el) return;
     const words = (el.textContent ?? '').trim().split(/\s+/);
     el.textContent = '';
-    const spans = words.map((w) => {
-      const outer = document.createElement('span');
-      outer.style.display = 'inline-block';
-      outer.style.overflow = 'hidden';
-      outer.style.verticalAlign = 'top';
-      const inner = document.createElement('span');
-      inner.style.display = 'inline-block';
-      inner.textContent = w;
-      outer.appendChild(inner);
-      el.appendChild(outer);
-      el.appendChild(document.createTextNode(' '));
-      return inner;
+    // Per-word rise + fade. No overflow:hidden mask — Arabic glyphs overshoot
+    // the line box well beyond any practical padding, so a clip mask cuts off
+    // ascenders/dots/descenders. A fade+translate reads just as lively.
+    const spans = words.map((w, i) => {
+      const span = document.createElement('span');
+      span.style.display = 'inline-block';
+      span.style.willChange = 'transform, opacity';
+      span.textContent = w;
+      el.appendChild(span);
+      if (i < words.length - 1) el.appendChild(document.createTextNode(' '));
+      return span;
     });
-    gsap.from(spans, {
-      yPercent: 110,
-      duration: 0.9,
-      ease: 'power4.out',
-      stagger: opts.stagger ?? 0.08,
-      delay: opts.delay ?? 0.2,
-    });
+    gsap.fromTo(
+      spans,
+      { opacity: 0, yPercent: 60 },
+      {
+        opacity: 1,
+        yPercent: 0,
+        duration: 0.9,
+        ease: 'power4.out',
+        stagger: opts.stagger ?? 0.08,
+        delay: opts.delay ?? 0.2,
+      },
+    );
   }
 
   pinHorizontal(opts: {
