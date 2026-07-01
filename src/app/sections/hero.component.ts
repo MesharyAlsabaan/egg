@@ -17,19 +17,11 @@ import { MotionService } from '../core/motion/motion.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section id="home" class="hero">
-      <div class="hero__blobs" aria-hidden="true">
+      <div class="hero__bg" aria-hidden="true">
+        <span class="hero__sun"></span>
         <span class="hero__blob hero__blob--1"></span>
         <span class="hero__blob hero__blob--2"></span>
-      </div>
-
-      <div class="hero__bg">
-        <img
-          #bg
-          src="assets/images/hero-candling.jpg"
-          alt="Fresh eggs being quality-inspected under golden light on the production line"
-          fetchpriority="high"
-        />
-        <div class="hero__scrim"></div>
+        <span class="hero__grid"></span>
       </div>
 
       <div class="container hero__inner">
@@ -50,7 +42,7 @@ import { MotionService } from '../core/motion/motion.service';
                 <path class="arrow" d="M5 12h14M13 6l6 6-6 6" />
               </svg>
             </a>
-            <a href="#products" class="btn btn--light">{{ t().hero.ctaProducts }}</a>
+            <a href="#products" class="btn btn--ghost">{{ t().hero.ctaProducts }}</a>
           </div>
 
           <dl class="hero__stats" appReveal="4">
@@ -69,11 +61,17 @@ import { MotionService } from '../core/motion/motion.service';
           </dl>
         </div>
 
-        <div class="hero__card" appReveal="3">
-          <span class="hero__card-egg">🥚</span>
-          <div>
-            <strong>طازج 100% من المزرعة</strong>
-            <small>يُجمع ويُفرز يومياً</small>
+        <div class="hero__scene" appReveal="2">
+          <div class="hero__chip hero__chip--fresh">
+            <span class="hero__chip-egg">🥚</span>
+            <div>
+              <strong>{{ i18n.isRtl() ? 'طازج 100%' : '100% Fresh' }}</strong>
+              <small>{{ i18n.isRtl() ? 'يُجمع كل صباح' : 'Collected daily' }}</small>
+            </div>
+          </div>
+          <div class="hero__chip hero__chip--grade">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+            <span>{{ i18n.isRtl() ? 'مرّر لمشاهدة الكسر' : 'Scroll to watch it crack' }}</span>
           </div>
         </div>
       </div>
@@ -87,19 +85,17 @@ import { MotionService } from '../core/motion/motion.service';
 })
 export class HeroComponent implements AfterViewInit {
   private readonly motion = inject(MotionService);
-  readonly t = inject(I18nService).t;
+  readonly i18n = inject(I18nService);
+  readonly t = this.i18n.t;
 
-  private readonly bg = viewChild<ElementRef<HTMLElement>>('bg');
   private readonly title = viewChild<ElementRef<HTMLElement>>('title');
   private readonly accent = viewChild<ElementRef<HTMLElement>>('accent');
   private readonly cta = viewChild<ElementRef<HTMLElement>>('cta');
 
   ngAfterViewInit(): void {
-    const bg = this.bg()?.nativeElement;
     const title = this.title()?.nativeElement;
     const accent = this.accent()?.nativeElement;
     const cta = this.cta()?.nativeElement;
-    if (bg) this.motion.parallax(bg, { y: 18 });
     if (title) this.motion.splitTextIn(title, { delay: 0.15 });
     if (accent) this.motion.reveal(accent, { delay: 0.6, y: 16 });
     if (cta) this.motion.magnetic(cta, 0.3);

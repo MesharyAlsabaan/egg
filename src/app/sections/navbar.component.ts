@@ -23,7 +23,7 @@ interface NavLink {
     <header class="nav" [class.nav--scrolled]="scrolled()">
       <div class="container nav__inner">
         <a href="#home" class="nav__brand" aria-label="Family Eggs — home">
-          <app-logo [light]="!scrolled()" />
+          <app-logo />
         </a>
 
         <nav class="nav__links" [class.open]="menuOpen()" aria-label="Primary">

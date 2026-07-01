@@ -3,11 +3,12 @@ import { I18nService } from '../core/i18n/i18n.service';
 import { MotionService } from '../core/motion/motion.service';
 import { SectionHeadingComponent } from '../shared/components/section-heading.component';
 import { RevealDirective } from '../shared/directives/reveal.directive';
+import { SafeHtmlPipe } from '../shared/pipes/safe-html.pipe';
 
 @Component({
   selector: 'app-why',
   standalone: true,
-  imports: [SectionHeadingComponent, RevealDirective],
+  imports: [SectionHeadingComponent, RevealDirective, SafeHtmlPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section id="why" class="section">
@@ -21,7 +22,7 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
         <div class="why">
           @for (item of items(); track item.title; let i = $index) {
             <article class="why__card card" appReveal [appReveal]="(i % 3) + 1">
-              <span class="why__icon" [innerHTML]="item.icon"></span>
+              <span class="why__icon" [innerHTML]="item.icon | safeHtml"></span>
               <h3>{{ item.title }}</h3>
               <p>{{ item.desc }}</p>
             </article>

@@ -2,11 +2,12 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject }
 import { I18nService } from '../core/i18n/i18n.service';
 import { MotionService } from '../core/motion/motion.service';
 import { LogoComponent } from '../shared/components/logo.component';
+import { SafeHtmlPipe } from '../shared/pipes/safe-html.pipe';
 
 @Component({
   selector: 'app-footer',
   standalone: true,
-  imports: [LogoComponent],
+  imports: [LogoComponent, SafeHtmlPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <footer class="footer">
@@ -16,7 +17,7 @@ import { LogoComponent } from '../shared/components/logo.component';
           <p>{{ t().footer.about }}</p>
           <div class="footer__social" [attr.aria-label]="t().footer.social">
             @for (s of social; track s.label) {
-              <a [href]="s.href" [attr.aria-label]="s.label" target="_blank" rel="noopener" [innerHTML]="s.icon"></a>
+              <a [href]="s.href" [attr.aria-label]="s.label" target="_blank" rel="noopener" [innerHTML]="s.icon | safeHtml"></a>
             }
           </div>
         </div>

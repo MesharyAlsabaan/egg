@@ -19,7 +19,7 @@ import { I18nService } from '../core/i18n/i18n.service';
     `
       .marquee {
         overflow: hidden;
-        background: var(--brand-tint);
+        background: rgba(253, 245, 234, 0.66);
         border-block: 1px solid var(--line);
         padding-block: 14px;
       }

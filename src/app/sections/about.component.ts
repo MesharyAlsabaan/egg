@@ -4,16 +4,17 @@ import {
   Component,
   ElementRef,
   inject,
-  viewChild,
 } from '@angular/core';
 import { I18nService } from '../core/i18n/i18n.service';
 import { RevealDirective } from '../shared/directives/reveal.directive';
 import { MotionService } from '../core/motion/motion.service';
+import { EggComponent } from '../shared/components/egg.component';
+import { SafeHtmlPipe } from '../shared/pipes/safe-html.pipe';
 
 @Component({
   selector: 'app-about',
   standalone: true,
-  imports: [RevealDirective],
+  imports: [RevealDirective, EggComponent, SafeHtmlPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section id="about" class="section">
@@ -26,7 +27,7 @@ import { MotionService } from '../core/motion/motion.service';
           <div class="about__cards">
             @for (card of cards(); track card.title; let i = $index) {
               <article class="about__card" appReveal [appReveal]="i + 1" data-reveal>
-                <span class="about__card-icon" [innerHTML]="card.icon"></span>
+                <span class="about__card-icon" [innerHTML]="card.icon | safeHtml"></span>
                 <h3>{{ card.title }}</h3>
                 <p>{{ card.text }}</p>
               </article>
@@ -35,15 +36,28 @@ import { MotionService } from '../core/motion/motion.service';
         </div>
 
         <div class="about__media" appReveal>
-          <figure class="about__img about__img--main" #aboutImg>
-            <img src="assets/images/farm-overview.jpg" alt="Aerial view of Family Eggs farm and facilities" loading="lazy" />
-          </figure>
-          <figure class="about__img about__img--sub">
-            <img src="assets/images/green-fields.jpg" alt="Green irrigated fields surrounding the farm" loading="lazy" />
-          </figure>
+          <div class="about__scene">
+            <span class="about__leaf" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none"><path d="M40 8s2 20-12 24C22 20 40 8 40 8Z" fill="#6ba368"/><path d="M34 15c-6 4-9 10-10 17" stroke="#4f7d4d" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </span>
+
+            <div class="about__tray" aria-label="A tray of farm-fresh eggs">
+              @for (egg of eggs; track $index) {
+                <span class="about__egg" [style.--i]="$index">
+                  <app-egg [tone]="egg.tone" [speckled]="egg.speckled" />
+                </span>
+              }
+            </div>
+          </div>
+
           <div class="about__badge">
             <strong>100%</strong>
             <span>{{ i18n.isRtl() ? 'بيض سعودي' : 'Saudi eggs' }}</span>
+          </div>
+
+          <div class="about__chip">
+            <span class="about__chip-dot"></span>
+            {{ i18n.isRtl() ? 'جودة درجة أ' : 'Grade A quality' }}
           </div>
         </div>
       </div>
@@ -53,84 +67,157 @@ import { MotionService } from '../core/motion/motion.service';
     `
       .about {
         display: grid;
-        grid-template-columns: 1.1fr 0.9fr;
-        gap: clamp(32px, 5vw, 64px);
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: clamp(32px, 5vw, 72px);
         align-items: center;
-      }
-      .about__media {
-        position: relative;
-        min-height: 460px;
-      }
-      .about__img {
-        position: absolute;
-        border-radius: var(--radius-lg);
-        overflow: hidden;
-        box-shadow: var(--shadow-lg);
-        img { width: 100%; height: 100%; object-fit: cover; }
-      }
-      .about__img--main {
-        inset-inline-start: 0;
-        top: 0;
-        width: 78%;
-        height: 78%;
-      }
-      .about__img--sub {
-        inset-inline-end: 0;
-        bottom: 0;
-        width: 52%;
-        height: 50%;
-        border: 6px solid var(--cream);
-      }
-      .about__badge {
-        position: absolute;
-        inset-inline-start: 8%;
-        bottom: 6%;
-        background: var(--grad-warm);
-        color: #fff;
-        border-radius: var(--radius);
-        padding: 14px 20px;
-        text-align: center;
-        box-shadow: var(--shadow);
-        z-index: 2;
-        strong { display: block; font-size: 1.7rem; line-height: 1; }
-        span { font-size: 0.8rem; opacity: 0.95; }
       }
       .about__body .lead { margin-top: 18px; }
       .about__cards {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 16px;
-        margin-top: 32px;
+        margin-top: 34px;
       }
       .about__card {
-        background: var(--cream);
+        background: var(--paper);
         border: 1px solid var(--line);
         border-radius: var(--radius);
-        padding: 22px;
-        transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
-        &:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+        padding: 24px;
+        transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease);
+        &:hover { transform: translateY(-6px); box-shadow: var(--shadow); }
         &:first-child { grid-column: 1 / -1; }
-        h3 { font-size: 1.1rem; margin-bottom: 6px; }
+        h3 { font-size: 1.15rem; margin-bottom: 6px; }
         p { font-size: 0.92rem; color: var(--ink-2); }
       }
       .about__card-icon {
         display: grid;
         place-items: center;
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
+        width: 46px;
+        height: 46px;
+        border-radius: 13px;
         background: var(--brand-soft);
         color: var(--brand-700);
         margin-bottom: 14px;
         ::ng-deep svg { width: 22px; height: 22px; }
       }
+
+      /* ------------------------ Illustration ------------------------ */
+      .about__media {
+        position: relative;
+        min-height: 440px;
+        display: grid;
+        place-items: center;
+      }
+      .about__scene {
+        position: relative;
+        width: min(100%, 460px);
+        aspect-ratio: 1 / 0.92;
+        border-radius: var(--radius-lg);
+        background:
+          radial-gradient(120% 90% at 30% 15%, #fff6e4 0%, transparent 55%),
+          linear-gradient(150deg, #fbeccf 0%, #f4dfb4 55%, #ecd39a 100%);
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+        display: grid;
+        place-items: center;
+      }
+      .about__scene::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(rgba(107, 74, 43, 0.1) 1.4px, transparent 1.4px);
+        background-size: 26px 26px;
+        opacity: 0.5;
+      }
+      .about__tray {
+        position: relative;
+        z-index: 1;
+        width: 78%;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: clamp(6px, 2vw, 16px);
+        padding: clamp(16px, 4vw, 30px);
+        background: linear-gradient(160deg, #fbf4e6, #efe0c6);
+        border: 1px solid rgba(107, 74, 43, 0.12);
+        border-radius: 26px;
+        box-shadow:
+          inset 0 3px 10px rgba(255, 255, 255, 0.7),
+          0 24px 44px -22px rgba(107, 74, 43, 0.5);
+      }
+      .about__egg {
+        display: block;
+        aspect-ratio: 4 / 5;
+        animation: eggBob 4s var(--ease) infinite alternate;
+        animation-delay: calc(var(--i) * 0.25s);
+      }
+      @keyframes eggBob {
+        from { transform: translateY(0); }
+        to { transform: translateY(-7px); }
+      }
+      .about__leaf {
+        position: absolute;
+        top: 6%;
+        inset-inline-end: 8%;
+        width: 58px;
+        z-index: 2;
+        animation: leafSway 5s var(--ease) infinite alternate;
+        transform-origin: top center;
+      }
+      @keyframes leafSway {
+        from { transform: rotate(-6deg); }
+        to { transform: rotate(8deg); }
+      }
+      .about__badge {
+        position: absolute;
+        inset-inline-start: 2%;
+        bottom: 8%;
+        background: var(--grad-warm);
+        color: #fff;
+        border-radius: var(--radius);
+        padding: 16px 22px;
+        text-align: center;
+        box-shadow: var(--shadow);
+        z-index: 3;
+        strong { display: block; font-family: var(--font-display); font-size: 1.8rem; line-height: 1; }
+        span { font-size: 0.8rem; opacity: 0.95; }
+      }
+      .about__chip {
+        position: absolute;
+        inset-inline-end: 0;
+        top: 12%;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--white);
+        border: 1px solid var(--line);
+        color: var(--ink);
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 10px 16px;
+        border-radius: var(--radius-pill);
+        box-shadow: var(--shadow);
+        z-index: 3;
+        animation: floaty 4.5s var(--ease) infinite alternate;
+      }
+      .about__chip-dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: var(--green);
+      }
+      @keyframes floaty {
+        from { transform: translateY(0); }
+        to { transform: translateY(-12px); }
+      }
+
       @media (max-width: 880px) {
         .about { grid-template-columns: 1fr; }
-        .about__media { min-height: 380px; max-width: 520px; margin-inline: auto; width: 100%; }
+        .about__media { min-height: 360px; max-width: 520px; margin-inline: auto; width: 100%; }
       }
       @media (max-width: 460px) {
         .about__cards { grid-template-columns: 1fr; }
         .about__card:first-child { grid-column: auto; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .about__egg, .about__leaf, .about__chip { animation: none; }
       }
     `,
   ],
@@ -141,11 +228,17 @@ export class AboutComponent implements AfterViewInit {
 
   private readonly motion = inject(MotionService);
   private readonly host = inject(ElementRef<HTMLElement>);
-  private readonly aboutImg = viewChild<ElementRef<HTMLElement>>('aboutImg');
+
+  readonly eggs = [
+    { tone: 'white' as const, speckled: false },
+    { tone: 'brown' as const, speckled: true },
+    { tone: 'cream' as const, speckled: false },
+    { tone: 'brown' as const, speckled: true },
+    { tone: 'white' as const, speckled: false },
+    { tone: 'golden' as const, speckled: false },
+  ];
 
   ngAfterViewInit(): void {
-    const img = this.aboutImg()?.nativeElement;
-    if (img) this.motion.parallax(img, { y: 12 });
     const items = this.host.nativeElement.querySelectorAll('[data-reveal]') as NodeListOf<HTMLElement>;
     this.motion.revealStagger(items, { stagger: 0.1 });
   }

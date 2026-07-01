@@ -11,11 +11,12 @@ import { I18nService } from '../core/i18n/i18n.service';
 import { MotionService } from '../core/motion/motion.service';
 import { SectionHeadingComponent } from '../shared/components/section-heading.component';
 import { RevealDirective } from '../shared/directives/reveal.directive';
+import { SafeHtmlPipe } from '../shared/pipes/safe-html.pipe';
 
 @Component({
   selector: 'app-process',
   standalone: true,
-  imports: [SectionHeadingComponent, RevealDirective],
+  imports: [SectionHeadingComponent, RevealDirective, SafeHtmlPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section id="process" class="section section--brand-tint">
@@ -33,7 +34,7 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
               <li class="timeline__step" appReveal [appReveal]="i + 1">
                 <span class="timeline__node">
                   <span class="timeline__num">{{ i + 1 }}</span>
-                  <span class="timeline__icon" [innerHTML]="step.icon"></span>
+                  <span class="timeline__icon" [innerHTML]="step.icon | safeHtml"></span>
                 </span>
                 <h3>{{ step.title }}</h3>
                 <p>{{ step.desc }}</p>

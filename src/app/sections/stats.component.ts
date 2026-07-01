@@ -4,7 +4,6 @@ import {
   Component,
   ElementRef,
   inject,
-  viewChild,
 } from '@angular/core';
 import { I18nService } from '../core/i18n/i18n.service';
 import { MotionService } from '../core/motion/motion.service';
@@ -18,8 +17,11 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="stats">
-      <div class="stats__bg">
-        <img #statsBg src="assets/images/facility-aerial.jpg" alt="" aria-hidden="true" loading="lazy" />
+      <div class="stats__bg" aria-hidden="true">
+        <span class="stats__sheen"></span>
+        <span class="stats__egg stats__egg--1"></span>
+        <span class="stats__egg stats__egg--2"></span>
+        <span class="stats__egg stats__egg--3"></span>
       </div>
       <div class="container">
         <h2 class="stats__title h-section" appReveal>{{ t().stats.title }}</h2>
@@ -43,7 +45,7 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
       .stats {
         position: relative;
         isolation: isolate;
-        padding-block: clamp(64px, 9vw, 110px);
+        padding-block: clamp(64px, 9vw, 118px);
         color: #fff;
         overflow: hidden;
       }
@@ -51,26 +53,46 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
         position: absolute;
         inset: 0;
         z-index: -2;
-        /* Oversized + offset so the parallax travel never exposes a seam at
-           the section edges. */
-        img { position: absolute; top: -15%; left: 0; width: 100%; height: 130%; object-fit: cover; }
-        &::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(135deg, rgba(178, 90, 22, 0.94), rgba(33, 26, 19, 0.9));
-          background-size: 200% 200%;
-          animation: statsSheen 12s ease-in-out infinite alternate;
-        }
+        background:
+          radial-gradient(90% 120% at 15% 0%, #d0842a 0%, transparent 55%),
+          radial-gradient(90% 120% at 90% 100%, #6ba368 0%, transparent 50%),
+          linear-gradient(135deg, #3a2a17, #241c14 60%, #2c2013);
+      }
+      .stats__bg::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1.4px, transparent 1.4px);
+        background-size: 26px 26px;
+      }
+      .stats__sheen {
+        position: absolute;
+        inset: -40%;
+        background: radial-gradient(circle at 50% 50%, rgba(246, 196, 69, 0.25), transparent 55%);
+        animation: statsSheen 12s ease-in-out infinite alternate;
       }
       @keyframes statsSheen {
-        0%   { background-position: 0% 0%; }
-        100% { background-position: 100% 100%; }
+        0% { transform: translate(-8%, -6%) scale(1); }
+        100% { transform: translate(8%, 6%) scale(1.15); }
+      }
+      .stats__egg {
+        position: absolute;
+        width: 90px;
+        height: 116px;
+        border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+        background: radial-gradient(circle at 38% 28%, rgba(255,255,255,0.16), rgba(255,255,255,0.04));
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        animation: statsFloat 9s var(--ease) infinite alternate;
+      }
+      .stats__egg--1 { top: 12%; inset-inline-start: 6%; }
+      .stats__egg--2 { bottom: 8%; inset-inline-end: 12%; width: 64px; height: 82px; animation-delay: 2s; }
+      .stats__egg--3 { top: 40%; inset-inline-end: 34%; width: 44px; height: 56px; animation-delay: 4s; opacity: 0.7; }
+      @keyframes statsFloat {
+        from { transform: translateY(0) rotate(-6deg); }
+        to { transform: translateY(-24px) rotate(6deg); }
       }
       @media (prefers-reduced-motion: reduce) {
-        .stats__bg::after {
-          animation: none;
-        }
+        .stats__sheen, .stats__egg { animation: none; }
       }
       .stats__title {
         text-align: center;
@@ -84,18 +106,19 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
       }
       .stats__item {
         text-align: center;
-        padding: 22px 12px;
+        padding: 26px 14px;
         border-radius: var(--radius);
-        background: rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.07);
         border: 1px solid rgba(255, 255, 255, 0.16);
-        backdrop-filter: blur(4px);
+        backdrop-filter: blur(6px);
         transition: transform 0.4s var(--ease), background 0.4s var(--ease);
-        &:hover { transform: translateY(-6px); background: rgba(255, 255, 255, 0.14); }
+        &:hover { transform: translateY(-8px); background: rgba(255, 255, 255, 0.13); }
       }
       .stats__value {
         display: block;
+        font-family: var(--font-display);
         font-size: clamp(2.4rem, 5vw, 3.4rem);
-        font-weight: 800;
+        font-weight: 700;
         line-height: 1;
         color: var(--yolk);
         text-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
@@ -116,12 +139,7 @@ export class StatsComponent implements AfterViewInit {
   private readonly motion = inject(MotionService);
   private readonly host = inject(ElementRef) as ElementRef<HTMLElement>;
 
-  private readonly statsBg = viewChild<ElementRef<HTMLImageElement>>('statsBg');
-
   ngAfterViewInit(): void {
-    const bg = this.statsBg()?.nativeElement;
-    if (bg) this.motion.parallax(bg, { y: 10 });
-
     const items = this.host.nativeElement.querySelectorAll('.stats__item') as NodeListOf<HTMLElement>;
     this.motion.revealStagger(items, { stagger: 0.12, y: 30 });
   }

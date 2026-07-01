@@ -3,25 +3,31 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  HostListener,
+  computed,
   inject,
-  signal,
 } from '@angular/core';
 import { I18nService } from '../core/i18n/i18n.service';
 import { MotionService } from '../core/motion/motion.service';
 import { SectionHeadingComponent } from '../shared/components/section-heading.component';
 import { RevealDirective } from '../shared/directives/reveal.directive';
+import { SafeHtmlPipe } from '../shared/pipes/safe-html.pipe';
 
-interface GalleryImage {
-  src: string;
-  alt: string;
+interface Tile {
+  en: string;
+  ar: string;
   span: string;
+  grad: string;
+  icon: string;
 }
 
+/**
+ * Visual showcase built entirely from CSS gradients + inline SVG line art
+ * (no photography). A bento grid of "farm moments" with a hover lift + zoom.
+ */
 @Component({
   selector: 'app-gallery',
   standalone: true,
-  imports: [SectionHeadingComponent, RevealDirective],
+  imports: [SectionHeadingComponent, RevealDirective, SafeHtmlPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section id="gallery" class="section section--tint">
@@ -33,42 +39,22 @@ interface GalleryImage {
         />
 
         <div class="gallery">
-          @for (img of images; track img.src; let i = $index) {
-            <button
-              class="gallery__item"
-              [class]="img.span"
-              (click)="open(i)"
+          @for (tile of tiles; track tile.en; let i = $index) {
+            <figure
+              class="gtile"
+              [class]="tile.span"
+              [style.--grad]="tile.grad"
               appReveal
               [appReveal]="(i % 4) + 1"
-              [attr.aria-label]="'View image: ' + img.alt"
             >
-              <img [src]="img.src" [alt]="img.alt" loading="lazy" />
-              <span class="gallery__zoom">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-3.5-3.5M11 8v6M8 11h6"/></svg>
-              </span>
-            </button>
+              <span class="gtile__art" [innerHTML]="tile.icon | safeHtml"></span>
+              <span class="gtile__dots" aria-hidden="true"></span>
+              <figcaption>{{ i18n.isRtl() ? tile.ar : tile.en }}</figcaption>
+            </figure>
           }
         </div>
       </div>
     </section>
-
-    @if (current() !== null) {
-      <div class="lightbox" (click)="close()">
-        <button class="lightbox__close" (click)="close()" aria-label="Close">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
-        </button>
-        <button class="lightbox__nav prev" (click)="step(-1, $event)" aria-label="Previous">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg>
-        </button>
-        <figure class="lightbox__figure" (click)="$event.stopPropagation()">
-          <img [src]="images[current()!].src" [alt]="images[current()!].alt" />
-          <figcaption>{{ images[current()!].alt }}</figcaption>
-        </figure>
-        <button class="lightbox__nav next" (click)="step(1, $event)" aria-label="Next">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
-        </button>
-      </div>
-    }
   `,
   styles: [
     `
@@ -76,159 +62,119 @@ interface GalleryImage {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         grid-auto-rows: 200px;
-        gap: 14px;
+        gap: 16px;
       }
-      .gallery__item {
+      .gtile {
         position: relative;
         overflow: hidden;
         border-radius: var(--radius);
-        cursor: pointer;
+        background: var(--grad);
         box-shadow: var(--shadow-sm);
-        img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--ease); }
-        &::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(to top, rgba(43, 23, 8, 0.35), transparent 55%);
-          opacity: 0;
-          transition: opacity 0.35s var(--ease);
-        }
-        &:hover img { transform: scale(1.1); }
-        &:hover::after { opacity: 1; }
-        &:hover .gallery__zoom { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-      }
-      .gallery__zoom {
-        position: absolute;
-        top: 50%;
-        inset-inline-start: 50%;
-        transform: translate(-50%, -50%) scale(0.7);
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.95);
-        color: var(--brand-700);
+        border: 1px solid rgba(255, 255, 255, 0.5);
         display: grid;
         place-items: center;
-        opacity: 0;
-        transition: opacity 0.35s var(--ease), transform 0.35s var(--ease);
-        z-index: 2;
-        svg { width: 22px; height: 22px; }
+        transition: transform 0.45s var(--ease), box-shadow 0.45s var(--ease);
       }
+      .gtile:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+      .gtile__dots {
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(rgba(255, 255, 255, 0.45) 1.3px, transparent 1.3px);
+        background-size: 20px 20px;
+        opacity: 0.5;
+      }
+      .gtile__art {
+        position: relative;
+        z-index: 1;
+        width: 46%;
+        max-width: 118px;
+        color: rgba(60, 42, 22, 0.82);
+        transition: transform 0.5s var(--ease);
+        ::ng-deep svg { width: 100%; height: auto; }
+      }
+      .gtile:hover .gtile__art { transform: scale(1.12) rotate(-3deg); }
+      figcaption {
+        position: absolute;
+        inset-inline: 16px;
+        bottom: 14px;
+        z-index: 2;
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: 1rem;
+        color: #3a2a16;
+        text-shadow: 0 1px 8px rgba(255, 255, 255, 0.5);
+      }
+
       .wide { grid-column: span 2; }
       .tall { grid-row: span 2; }
 
-      .lightbox {
-        position: fixed;
-        inset: 0;
-        z-index: 1000;
-        background: rgba(20, 14, 8, 0.92);
-        backdrop-filter: blur(8px);
-        display: grid;
-        place-items: center;
-        padding: clamp(16px, 4vw, 48px);
-        animation: fade 0.3s var(--ease);
-      }
-      @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
-      .lightbox__figure {
-        max-width: min(1000px, 92vw);
-        max-height: 84vh;
-        img {
-          width: 100%;
-          max-height: 78vh;
-          object-fit: contain;
-          border-radius: var(--radius);
-          box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.7);
-        }
-        figcaption { color: rgba(255, 255, 255, 0.85); text-align: center; margin-top: 14px; font-size: 0.95rem; }
-      }
-      .lightbox__close {
-        position: absolute;
-        top: 20px;
-        inset-inline-end: 20px;
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.12);
-        color: #fff;
-        display: grid;
-        place-items: center;
-        transition: background 0.25s var(--ease);
-        &:hover { background: rgba(255, 255, 255, 0.25); }
-        svg { width: 24px; height: 24px; }
-      }
-      .lightbox__nav {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 54px;
-        height: 54px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.12);
-        color: #fff;
-        display: grid;
-        place-items: center;
-        transition: background 0.25s var(--ease);
-        &:hover { background: var(--brand); }
-        svg { width: 26px; height: 26px; }
-        &.prev { inset-inline-start: 16px; }
-        &.next { inset-inline-end: 16px; }
-      }
       @media (max-width: 880px) {
-        .gallery { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 160px; }
+        .gallery { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 170px; }
         .wide { grid-column: span 2; }
         .tall { grid-row: span 1; }
       }
       @media (max-width: 520px) {
-        .gallery { grid-template-columns: 1fr 1fr; grid-auto-rows: 130px; }
-        .lightbox__nav { width: 44px; height: 44px; }
+        .gallery { grid-template-columns: 1fr 1fr; grid-auto-rows: 140px; }
+        .gtile__art { width: 40%; }
+        figcaption { font-size: 0.85rem; }
       }
     `,
   ],
 })
 export class GalleryComponent implements AfterViewInit {
-  private readonly i18n = inject(I18nService);
+  readonly i18n = inject(I18nService);
   private readonly motion = inject(MotionService);
   private readonly host = inject(ElementRef<HTMLElement>);
   readonly t = this.i18n.t;
 
-  readonly current = signal<number | null>(null);
+  private s = (d: string) =>
+    `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
 
-  readonly images: GalleryImage[] = [
-    { src: 'assets/images/conveyor-eggs.jpg', alt: 'Fresh eggs travelling along the collection conveyor', span: 'wide tall' },
-    { src: 'assets/images/hen-house.jpg', alt: 'Climate-controlled hen house', span: '' },
-    { src: 'assets/images/grading-hall.jpg', alt: 'Modern egg grading hall', span: '' },
-    { src: 'assets/images/packing-line.jpg', alt: 'Automated packing and tray line', span: 'wide' },
-    { src: 'assets/images/farm-solar.jpg', alt: 'Solar-powered farm buildings', span: '' },
-    { src: 'assets/images/product-blue-tray.jpg', alt: 'Tray of farm-fresh white eggs', span: '' },
-    { src: 'assets/images/green-fields-2.jpg', alt: 'Green irrigated pivot fields', span: 'wide' },
-    { src: 'assets/images/facility-aerial.jpg', alt: 'Aerial view of the production facility', span: '' },
-    { src: 'assets/images/solar-panels.jpg', alt: 'On-site solar energy array', span: '' },
+  readonly tiles: Tile[] = [
+    {
+      en: 'Climate-controlled houses', ar: 'حظائر مكيّفة', span: 'wide tall',
+      grad: 'linear-gradient(150deg,#fce9c8,#f4d59a)',
+      icon: this.s('<path d="M10 30 32 14l22 16"/><path d="M16 30v20h32V30"/><path d="M28 50V38h8v12"/>'),
+    },
+    {
+      en: 'Daily collection', ar: 'جمع يومي', span: '',
+      grad: 'linear-gradient(150deg,#e9f2df,#cfe4be)',
+      icon: this.s('<ellipse cx="24" cy="34" rx="8" ry="11"/><ellipse cx="40" cy="34" rx="8" ry="11"/><path d="M12 48h40"/>'),
+    },
+    {
+      en: 'Precision grading', ar: 'فرز دقيق', span: '',
+      grad: 'linear-gradient(150deg,#fbe6d0,#f3cba6)',
+      icon: this.s('<circle cx="28" cy="28" r="14"/><path d="m40 40 10 10"/><path d="m22 28 4 4 8-8"/>'),
+    },
+    {
+      en: 'Automated packing', ar: 'تعبئة آلية', span: 'wide',
+      grad: 'linear-gradient(150deg,#fdeecb,#f7dca0)',
+      icon: this.s('<path d="M12 22h40v10H12z"/><path d="M16 32v18h32V32"/><path d="M26 22v-6h12v6"/><path d="M28 40h8"/>'),
+    },
+    {
+      en: 'Solar-powered farm', ar: 'طاقة شمسية', span: '',
+      grad: 'linear-gradient(150deg,#e9f2df,#cbe1bb)',
+      icon: this.s('<circle cx="32" cy="24" r="8"/><path d="M32 8v4M32 36v4M16 24h4M44 24h4M20 12l3 3M44 12l-3 3"/><path d="M18 52 24 42h16l6 10z"/>'),
+    },
+    {
+      en: 'Green fields', ar: 'حقول خضراء', span: '',
+      grad: 'linear-gradient(150deg,#e3efd8,#c4dcae)',
+      icon: this.s('<path d="M32 50V26"/><path d="M32 34c-6-2-10-8-10-14 6 0 10 4 10 10"/><path d="M32 30c6-2 10-8 10-14-6 0-10 4-10 10"/><path d="M14 50h36"/>'),
+    },
+    {
+      en: 'Fresh delivery', ar: 'توصيل طازج', span: 'wide',
+      grad: 'linear-gradient(150deg,#fbe6d0,#f2c9a2)',
+      icon: this.s('<path d="M8 20h26v22H8z"/><path d="M34 26h10l8 8v8H34z"/><circle cx="18" cy="46" r="4"/><circle cx="44" cy="46" r="4"/>'),
+    },
+    {
+      en: 'Trusted sourcing', ar: 'مصدر موثوق', span: '',
+      grad: 'linear-gradient(150deg,#fdeecb,#f6d89b)',
+      icon: this.s('<path d="M32 10 16 16v12c0 12 8 18 16 22 8-4 16-10 16-22V16z"/><path d="m24 30 5 5 11-11"/>'),
+    },
   ];
 
   ngAfterViewInit(): void {
-    const tiles = this.host.nativeElement.querySelectorAll('.gallery__item') as NodeListOf<HTMLElement>;
+    const tiles = this.host.nativeElement.querySelectorAll('.gtile') as NodeListOf<HTMLElement>;
     this.motion.revealStagger(tiles, { stagger: 0.07, y: 24 });
-  }
-
-  open(i: number): void {
-    this.current.set(i);
-    document.body.style.overflow = 'hidden';
-  }
-  close(): void {
-    this.current.set(null);
-    document.body.style.overflow = '';
-  }
-  step(dir: number, ev: Event): void {
-    ev.stopPropagation();
-    const len = this.images.length;
-    this.current.update((c) => (c === null ? null : (c + dir + len) % len));
-  }
-
-  @HostListener('document:keydown', ['$event'])
-  onKey(ev: KeyboardEvent): void {
-    if (this.current() === null) return;
-    if (ev.key === 'Escape') this.close();
-    else if (ev.key === 'ArrowRight') this.step(this.i18n.isRtl() ? -1 : 1, ev);
-    else if (ev.key === 'ArrowLeft') this.step(this.i18n.isRtl() ? 1 : -1, ev);
   }
 }

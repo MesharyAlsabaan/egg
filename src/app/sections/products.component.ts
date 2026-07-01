@@ -3,11 +3,12 @@ import { I18nService } from '../core/i18n/i18n.service';
 import { MotionService } from '../core/motion/motion.service';
 import { SectionHeadingComponent } from '../shared/components/section-heading.component';
 import { RevealDirective } from '../shared/directives/reveal.directive';
+import { EggComponent, EggTone } from '../shared/components/egg.component';
 
 @Component({
   selector: 'app-products',
   standalone: true,
-  imports: [SectionHeadingComponent, RevealDirective],
+  imports: [SectionHeadingComponent, RevealDirective, EggComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section id="products" class="section section--tint">
@@ -21,8 +22,9 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
         <div class="products">
           @for (p of products(); track p.name; let i = $index) {
             <article class="product card" appReveal [appReveal]="i + 1">
-              <div class="product__media">
-                <img [src]="p.img" [alt]="p.name" loading="lazy" [class]="p.filter" />
+              <div class="product__media" [attr.data-tone]="p.tone">
+                <span class="product__glow"></span>
+                <span class="product__egg"><app-egg [tone]="p.tone" [speckled]="p.speckled" [label]="p.name" /></span>
                 <span class="product__tag">{{ p.tag }}</span>
               </div>
               <div class="product__body">
@@ -46,8 +48,8 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
       .products {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: clamp(16px, 2vw, 24px);
-        max-width: 1000px;
+        gap: clamp(16px, 2vw, 26px);
+        max-width: 1040px;
         margin-inline: auto;
       }
       .product {
@@ -63,39 +65,61 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
         position: relative;
         aspect-ratio: 4 / 3;
         overflow: hidden;
-        img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          transition: transform 0.6s var(--ease);
-        }
-        img.is-brown { filter: sepia(0.45) saturate(1.5) hue-rotate(-12deg) brightness(0.92); }
-        img.is-golden { filter: saturate(1.15) brightness(1.05); }
+        display: grid;
+        place-items: center;
+        background: linear-gradient(160deg, #fffaf0, #f3e6cd);
       }
-      .product:hover .product__media img {
-        transform: scale(1.08);
+      .product__media[data-tone='brown'] { background: linear-gradient(160deg, #f7ecda, #eeddc0); }
+      .product__media[data-tone='golden'] { background: linear-gradient(160deg, #fff5d8, #f6e6b4); }
+      .product__media::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(rgba(107, 74, 43, 0.08) 1.2px, transparent 1.2px);
+        background-size: 22px 22px;
       }
+      .product__glow {
+        position: absolute;
+        width: 62%;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(246, 196, 69, 0.5), transparent 68%);
+        filter: blur(6px);
+        transition: transform 0.6s var(--ease), opacity 0.6s var(--ease);
+      }
+      .product__egg {
+        position: relative;
+        z-index: 1;
+        width: 46%;
+        height: 78%;
+        display: block;
+        transition: transform 0.6s var(--ease);
+        filter: drop-shadow(0 18px 22px rgba(107, 74, 43, 0.28));
+      }
+      .product:hover .product__egg { transform: translateY(-8px) rotate(-4deg) scale(1.05); }
+      .product:hover .product__glow { transform: scale(1.15); opacity: 0.85; }
       .product__tag {
         position: absolute;
-        top: 12px;
-        inset-inline-start: 12px;
-        background: rgba(255, 255, 255, 0.95);
+        top: 14px;
+        inset-inline-start: 14px;
+        z-index: 2;
+        background: rgba(255, 255, 255, 0.96);
         color: var(--brand-700);
         font-size: 0.72rem;
         font-weight: 800;
         letter-spacing: 0.04em;
         text-transform: uppercase;
-        padding: 6px 12px;
+        padding: 6px 13px;
         border-radius: var(--radius-pill);
         box-shadow: var(--shadow-sm);
       }
       .product__body {
-        padding: 20px 22px 24px;
+        padding: 22px 24px 26px;
         display: flex;
         flex-direction: column;
         flex: 1;
-        h3 { font-size: 1.2rem; }
-        p { margin: 8px 0 16px; font-size: 0.92rem; color: var(--ink-2); flex: 1; }
+        h3 { font-size: 1.25rem; }
+        p { margin: 8px 0 18px; font-size: 0.92rem; color: var(--ink-2); flex: 1; }
       }
       .product__link {
         display: inline-flex;
@@ -110,8 +134,11 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
       :host-context([dir='rtl']) .product__link svg { transform: scaleX(-1); }
       :host-context([dir='rtl']) .product__link:hover svg { transform: scaleX(-1) translateX(3px); }
 
-      @media (max-width: 860px) { .products { grid-template-columns: repeat(2, 1fr); max-width: 620px; } }
+      @media (max-width: 860px) { .products { grid-template-columns: repeat(2, 1fr); max-width: 640px; } }
       @media (max-width: 520px) { .products { grid-template-columns: 1fr; max-width: 360px; } }
+      @media (prefers-reduced-motion: reduce) {
+        .product:hover .product__egg { transform: none; }
+      }
     `,
   ],
 })
@@ -152,13 +179,14 @@ export class ProductsComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  private readonly meta = [
-    { img: 'assets/images/product-white-cartons.jpg', filter: '' },
-    { img: 'assets/images/product-blue-tray.jpg', filter: '' },
-    { img: 'assets/images/product-mixed-pack.jpg', filter: '' },
+  /** Egg art per product slot (white / brown-speckled / golden premium). */
+  private readonly meta: { tone: EggTone; speckled: boolean }[] = [
+    { tone: 'white', speckled: false },
+    { tone: 'brown', speckled: true },
+    { tone: 'golden', speckled: false },
   ];
 
   readonly products = computed(() =>
-    this.t().products.items.map((item, i) => ({ ...item, ...this.meta[i] })),
+    this.t().products.items.map((item, i) => ({ ...item, ...this.meta[i % this.meta.length] })),
   );
 }
