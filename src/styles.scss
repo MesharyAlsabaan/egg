@@ -85,6 +85,22 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
+/* Lenis smooth-scroll (recommended setup): while Lenis drives scrolling,
+   native CSS smooth behavior must be off or the two easings fight. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
 body {
   font-family: var(--font);
   color: var(--ink);

@@ -193,6 +193,31 @@ export class LandingComponent implements OnInit, OnDestroy {
     this.motion.destroy();
   }
 
+  /**
+   * Route every in-page anchor click (navbar, hero CTAs, footer…) through
+   * Lenis so navigation glides with the same easing as wheel scrolling —
+   * native `scroll-behavior: smooth` fights Lenis and lands with a snap.
+   */
+  @HostListener('click', ['$event'])
+  onAnchorClick(event: MouseEvent): void {
+    if (event.defaultPrevented || event.button !== 0) return;
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const anchor = (event.target as HTMLElement).closest?.('a[href^="#"]');
+    const id = anchor?.getAttribute('href')?.slice(1);
+    if (!id) return;
+    const el = document.getElementById(id);
+    if (!el) return;
+    event.preventDefault();
+    history.pushState(null, '', `#${id}`);
+    const headerH =
+      parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 78;
+    if (id === 'home') this.motion.scrollTo(0);
+    else this.motion.scrollTo(el, -headerH - 8);
+    // Keep keyboard/screen-reader position in sync with the visual jump.
+    el.setAttribute('tabindex', '-1');
+    el.focus({ preventScroll: true });
+  }
+
   @HostListener('window:scroll')
   onScroll(): void {
     this.showTop.set(window.scrollY > 600);
@@ -206,6 +231,6 @@ export class LandingComponent implements OnInit, OnDestroy {
   }
 
   scrollTop(): void {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.motion.scrollTo(0);
   }
 }

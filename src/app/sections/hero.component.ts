@@ -16,7 +16,7 @@ import { MotionService } from '../core/motion/motion.service';
   imports: [RevealDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <section id="home" class="hero">
+    <section #section id="home" class="hero">
       <div class="hero__bg" aria-hidden="true">
         <span class="hero__sun"></span>
         <span class="hero__blob hero__blob--1"></span>
@@ -91,13 +91,16 @@ export class HeroComponent implements AfterViewInit {
   private readonly title = viewChild<ElementRef<HTMLElement>>('title');
   private readonly accent = viewChild<ElementRef<HTMLElement>>('accent');
   private readonly cta = viewChild<ElementRef<HTMLElement>>('cta');
+  private readonly section = viewChild<ElementRef<HTMLElement>>('section');
 
   ngAfterViewInit(): void {
     const title = this.title()?.nativeElement;
     const accent = this.accent()?.nativeElement;
     const cta = this.cta()?.nativeElement;
+    const section = this.section()?.nativeElement;
     if (title) this.motion.splitTextIn(title, { delay: 0.15 });
     if (accent) this.motion.reveal(accent, { delay: 0.6, y: 16 });
     if (cta) this.motion.magnetic(cta, 0.3);
+    if (section) this.motion.pointerGlide(section);
   }
 }

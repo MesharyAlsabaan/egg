@@ -78,6 +78,65 @@ export class MotionService {
     this.started = false;
   }
 
+  /**
+   * Smooth-scroll to a target through Lenis so in-page navigation gets the
+   * same easing as wheel scrolling (native `scroll-behavior` fights Lenis and
+   * lands with a visible snap). Falls back to native smooth scroll when Lenis
+   * is off (reduced motion / SSR).
+   */
+  scrollTo(target: number | HTMLElement, offset = 0): void {
+    if (!this.isBrowser) return;
+    if (this.lenis) {
+      this.lenis.scrollTo(target, {
+        offset,
+        duration: 1.15,
+        easing: (t: number) => 1 - Math.pow(1 - t, 3),
+      });
+      return;
+    }
+    const top =
+      typeof target === 'number'
+        ? target
+        : target.getBoundingClientRect().top + window.scrollY + offset;
+    window.scrollTo({ top, behavior: this.reduced ? 'auto' : 'smooth' });
+  }
+
+  /**
+   * Sets `--mx` / `--my` (each -0.5 … 0.5, eased) on the section as the
+   * pointer moves, so the stylesheet can drift decorative layers at different
+   * depths via the `translate` property (which composes with the layers'
+   * existing transform keyframe animations). Desktop pointers only.
+   */
+  pointerGlide(section: HTMLElement): void {
+    if (!this.enabled || !section) return;
+    if (matchMedia('(hover: none)').matches) return;
+    const target = { x: 0, y: 0 };
+    const current = { x: 0, y: 0 };
+    const onMove = (e: MouseEvent): void => {
+      const r = section.getBoundingClientRect();
+      target.x = (e.clientX - r.left) / r.width - 0.5;
+      target.y = (e.clientY - r.top) / r.height - 0.5;
+    };
+    const onLeave = (): void => {
+      target.x = 0;
+      target.y = 0;
+    };
+    const tick = (): void => {
+      current.x += (target.x - current.x) * 0.07;
+      current.y += (target.y - current.y) * 0.07;
+      section.style.setProperty('--mx', current.x.toFixed(4));
+      section.style.setProperty('--my', current.y.toFixed(4));
+    };
+    gsap.ticker.add(tick);
+    section.addEventListener('mousemove', onMove);
+    section.addEventListener('mouseleave', onLeave);
+    this.cleanups.push(() => {
+      gsap.ticker.remove(tick);
+      section.removeEventListener('mousemove', onMove);
+      section.removeEventListener('mouseleave', onLeave);
+    });
+  }
+
   reveal(el: HTMLElement, opts: RevealOpts = {}): void {
     if (!this.enabled || !el) return;
     // fromTo with an explicit visible end state: using from() would read the

@@ -19,6 +19,9 @@
   overflow: hidden;
 }
 
+/* Pointer parallax: MotionService.pointerGlide feeds --mx/--my (-0.5 … 0.5)
+   on the section; each layer drifts at its own depth via `translate`, which
+   composes with the layers' keyframe `transform` animations. */
 .hero__sun {
   position: absolute;
   top: -160px;
@@ -29,6 +32,7 @@
   background: radial-gradient(circle, rgba(246, 196, 69, 0.32), transparent 62%);
   filter: blur(10px);
   animation: sunPulse 9s var(--ease) infinite alternate;
+  translate: calc(var(--mx, 0) * -34px) calc(var(--my, 0) * -22px);
 }
 @keyframes sunPulse {
   from { transform: scale(1); opacity: 0.85; }
@@ -46,12 +50,14 @@
   width: 380px; height: 380px;
   bottom: -120px; inset-inline-start: -80px;
   background: radial-gradient(circle, rgba(107, 163, 104, 0.4), transparent 70%);
+  translate: calc(var(--mx, 0) * 22px) calc(var(--my, 0) * 18px);
 }
 .hero__blob--2 {
   width: 320px; height: 320px;
   top: 30%; inset-inline-start: 32%;
   background: radial-gradient(circle, rgba(227, 154, 52, 0.28), transparent 70%);
   animation-delay: 3s;
+  translate: calc(var(--mx, 0) * 38px) calc(var(--my, 0) * 30px);
 }
 @keyframes blobdrift {
   from { transform: translate(0, 0) scale(1); }
@@ -188,6 +194,7 @@
   inset-inline-start: -4%;
   top: 16%;
   animation: floaty 4.5s var(--ease) infinite alternate;
+  translate: calc(var(--mx, 0) * 20px) calc(var(--my, 0) * 16px);
 
   .hero__chip-egg { font-size: 1.8rem; }
   strong { display: block; font-size: 1rem; color: var(--ink); }
@@ -196,6 +203,7 @@
 .hero__chip--grade {
   inset-inline-end: -2%;
   bottom: 12%;
+  translate: calc(var(--mx, 0) * -16px) calc(var(--my, 0) * -12px);
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--brand-700);
@@ -261,5 +269,5 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero__blob, .hero__sun, .hero__chip { animation: none; }
+  .hero__blob, .hero__sun, .hero__chip { animation: none; translate: none; }
 }

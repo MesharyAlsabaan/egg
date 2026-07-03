@@ -30,6 +30,27 @@
   }
 }
 
+/* Dim + tap-to-close layer behind the mobile drawer. */
+.nav__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: rgba(42, 38, 32, 0.32);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s var(--ease);
+
+  @media (min-width: 941px) {
+    display: none;
+  }
+
+  &.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
 .nav__inner {
   display: flex;
   align-items: center;

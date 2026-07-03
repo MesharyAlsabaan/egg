@@ -71,6 +71,22 @@ import { EggComponent, EggTone } from '../shared/components/egg.component';
       }
       .product__media[data-tone='brown'] { background: linear-gradient(160deg, #f7ecda, #eeddc0); }
       .product__media[data-tone='golden'] { background: linear-gradient(160deg, #fff5d8, #f6e6b4); }
+      /* Light sheen that sweeps across the media panel on hover. */
+      .product__media::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        pointer-events: none;
+        background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.5) 50%, transparent 65%);
+        transform: translateX(-130%);
+        opacity: 0;
+      }
+      .product:hover .product__media::before {
+        transform: translateX(130%);
+        opacity: 1;
+        transition: transform 0.9s var(--ease), opacity 0.2s;
+      }
       .product__media::after {
         content: '';
         position: absolute;
@@ -138,6 +154,7 @@ import { EggComponent, EggTone } from '../shared/components/egg.component';
       @media (max-width: 520px) { .products { grid-template-columns: 1fr; max-width: 360px; } }
       @media (prefers-reduced-motion: reduce) {
         .product:hover .product__egg { transform: none; }
+        .product__media::before { display: none; }
       }
     `,
   ],

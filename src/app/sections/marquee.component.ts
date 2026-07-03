@@ -22,6 +22,9 @@ import { I18nService } from '../core/i18n/i18n.service';
         background: rgba(253, 245, 234, 0.66);
         border-block: 1px solid var(--line);
         padding-block: 14px;
+        /* Fade items in/out at the edges instead of a hard clip. */
+        -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+                mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
       }
       .marquee__row {
         display: inline-flex;
@@ -45,6 +48,7 @@ import { I18nService } from '../core/i18n/i18n.service';
       }
       :host-context([dir='rtl']) .marquee__row { animation-direction: reverse; }
       @media (prefers-reduced-motion: reduce) {
+        .marquee { -webkit-mask-image: none; mask-image: none; }
         .marquee__row { animation: none; flex-wrap: wrap; white-space: normal; justify-content: center; }
       }
     `,

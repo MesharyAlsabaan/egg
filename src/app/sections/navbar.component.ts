@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   HostListener,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -21,6 +22,12 @@ interface NavLink {
   template: `
     <a class="skip-link" href="#products">{{ t().nav.products }}</a>
     <header class="nav" [class.nav--scrolled]="scrolled()">
+      <div
+        class="nav__backdrop"
+        [class.show]="menuOpen()"
+        (click)="close()"
+        aria-hidden="true"
+      ></div>
       <div class="container nav__inner">
         <a href="#home" class="nav__brand" aria-label="Family Eggs — home">
           <app-logo />
@@ -66,6 +73,14 @@ export class NavbarComponent {
   readonly menuOpen = signal(false);
   readonly active = signal('home');
 
+  constructor() {
+    // Lock page scroll behind the open mobile drawer.
+    effect(() => {
+      if (typeof document === 'undefined') return;
+      document.documentElement.style.overflow = this.menuOpen() ? 'hidden' : '';
+    });
+  }
+
   readonly links: NavLink[] = [
     { id: 'home', key: 'home' },
     { id: 'about', key: 'about' },
@@ -80,6 +95,11 @@ export class NavbarComponent {
   onScroll(): void {
     this.scrolled.set(window.scrollY > 24);
     this.computeActive();
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.close();
   }
 
   private computeActive(): void {
