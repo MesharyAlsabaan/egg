@@ -8,13 +8,12 @@ import {
 import { I18nService } from '../core/i18n/i18n.service';
 import { RevealDirective } from '../shared/directives/reveal.directive';
 import { MotionService } from '../core/motion/motion.service';
-import { EggComponent } from '../shared/components/egg.component';
 import { SafeHtmlPipe } from '../shared/pipes/safe-html.pipe';
 
 @Component({
   selector: 'app-about',
   standalone: true,
-  imports: [RevealDirective, EggComponent, SafeHtmlPipe],
+  imports: [RevealDirective, SafeHtmlPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section id="about" class="section">
@@ -36,18 +35,15 @@ import { SafeHtmlPipe } from '../shared/pipes/safe-html.pipe';
         </div>
 
         <div class="about__media" appReveal>
-          <div class="about__scene">
+          <div class="about__scene" aria-label="Sunrise over green farm fields">
             <span class="about__leaf" aria-hidden="true">
               <svg viewBox="0 0 48 48" fill="none"><path d="M40 8s2 20-12 24C22 20 40 8 40 8Z" fill="#6ba368"/><path d="M34 15c-6 4-9 10-10 17" stroke="#4f7d4d" stroke-width="1.6" stroke-linecap="round"/></svg>
             </span>
 
-            <div class="about__tray" aria-label="A tray of farm-fresh eggs">
-              @for (egg of eggs; track $index) {
-                <span class="about__egg" [style.--i]="$index">
-                  <app-egg [tone]="egg.tone" [speckled]="egg.speckled" />
-                </span>
-              }
-            </div>
+            <span class="about__sunrise" aria-hidden="true"></span>
+            <span class="about__ring" aria-hidden="true"></span>
+            <span class="about__hill about__hill--back" aria-hidden="true"></span>
+            <span class="about__hill about__hill--front" aria-hidden="true"></span>
           </div>
 
           <div class="about__badge">
@@ -129,30 +125,53 @@ import { SafeHtmlPipe } from '../shared/pipes/safe-html.pipe';
         background-size: 26px 26px;
         opacity: 0.5;
       }
-      .about__tray {
-        position: relative;
-        z-index: 1;
-        width: 78%;
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: clamp(6px, 2vw, 16px);
-        padding: clamp(16px, 4vw, 30px);
-        background: linear-gradient(160deg, #fbf4e6, #efe0c6);
-        border: 1px solid rgba(107, 74, 43, 0.12);
-        border-radius: 26px;
-        box-shadow:
-          inset 0 3px 10px rgba(255, 255, 255, 0.7),
-          0 24px 44px -22px rgba(107, 74, 43, 0.5);
+      /* Sunrise disc rising over two rolling hills — pure CSS scenery. */
+      .about__sunrise {
+        position: absolute;
+        top: 16%;
+        inset-inline-start: 50%;
+        transform: translateX(-50%);
+        width: 46%;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: var(--grad-sun);
+        box-shadow: 0 0 90px 24px rgba(246, 196, 69, 0.55);
+        animation: sunriseGlow 7s var(--ease) infinite alternate;
       }
-      .about__egg {
-        display: block;
-        aspect-ratio: 4 / 5;
-        animation: eggBob 4s var(--ease) infinite alternate;
-        animation-delay: calc(var(--i) * 0.25s);
+      @keyframes sunriseGlow {
+        from { box-shadow: 0 0 70px 18px rgba(246, 196, 69, 0.45); }
+        to { box-shadow: 0 0 110px 34px rgba(246, 196, 69, 0.65); }
       }
-      @keyframes eggBob {
-        from { transform: translateY(0); }
-        to { transform: translateY(-7px); }
+      .about__ring {
+        position: absolute;
+        top: 8%;
+        inset-inline-start: 50%;
+        transform: translateX(-50%);
+        width: 64%;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        border: 1.5px dashed rgba(178, 110, 32, 0.3);
+        animation: ringSpin 50s linear infinite;
+      }
+      @keyframes ringSpin {
+        to { transform: translateX(-50%) rotate(360deg); }
+      }
+      .about__hill {
+        position: absolute;
+        bottom: -18%;
+        width: 120%;
+        aspect-ratio: 2.4 / 1;
+        border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+      }
+      .about__hill--back {
+        inset-inline-start: -34%;
+        background: linear-gradient(180deg, #86b183, #6ba368 70%);
+        opacity: 0.85;
+        bottom: -12%;
+      }
+      .about__hill--front {
+        inset-inline-end: -38%;
+        background: linear-gradient(180deg, #6ba368, #558a52 70%);
       }
       .about__leaf {
         position: absolute;
@@ -217,7 +236,7 @@ import { SafeHtmlPipe } from '../shared/pipes/safe-html.pipe';
         .about__card:first-child { grid-column: auto; }
       }
       @media (prefers-reduced-motion: reduce) {
-        .about__egg, .about__leaf, .about__chip { animation: none; }
+        .about__sunrise, .about__ring, .about__leaf, .about__chip { animation: none; }
       }
     `,
   ],
@@ -228,15 +247,6 @@ export class AboutComponent implements AfterViewInit {
 
   private readonly motion = inject(MotionService);
   private readonly host = inject(ElementRef<HTMLElement>);
-
-  readonly eggs = [
-    { tone: 'white' as const, speckled: false },
-    { tone: 'brown' as const, speckled: true },
-    { tone: 'cream' as const, speckled: false },
-    { tone: 'brown' as const, speckled: true },
-    { tone: 'white' as const, speckled: false },
-    { tone: 'golden' as const, speckled: false },
-  ];
 
   ngAfterViewInit(): void {
     const items = this.host.nativeElement.querySelectorAll('[data-reveal]') as NodeListOf<HTMLElement>;

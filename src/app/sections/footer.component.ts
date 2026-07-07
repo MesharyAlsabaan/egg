@@ -50,7 +50,7 @@ import { SafeHtmlPipe } from '../shared/pipes/safe-html.pipe';
       <div class="footer__bar">
         <div class="container footer__bar-inner">
           <span>© {{ year }} شركة بيض العائلة للتجارة. {{ t().footer.rights }}</span>
-          <span class="footer__heart">🥚 {{ t().footer.made }}</span>
+          <span class="footer__heart">{{ t().footer.made }}</span>
         </div>
       </div>
     </footer>

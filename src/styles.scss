@@ -183,8 +183,8 @@ html[dir='rtl'] h4 {
   position: relative;
 }
 
-/* Translucent so the fixed egg-crack backdrop keeps progressing behind every
-   section (the crack "spans the whole site"), while text stays readable. */
+/* Translucent so the fixed aurora backdrop drifts behind every section,
+   while text stays readable. */
 .section--tint { background: rgba(246, 240, 230, 0.62); }
 .section--brand-tint { background: rgba(253, 245, 234, 0.6); }
 .section--dark { background: #241c14; color: #f6efe6; }
@@ -336,8 +336,8 @@ html[dir='rtl'] .eyebrow { letter-spacing: 0.04em; }
 }
 .boot-loader span {
   width: 14px;
-  height: 18px;
-  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  height: 14px;
+  border-radius: 50%;
   background: var(--grad-warm);
   animation: bob 0.9s var(--ease) infinite alternate;
 }

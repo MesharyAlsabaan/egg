@@ -177,39 +177,138 @@
   min-height: 52vh;
 }
 
+/* Slow-spinning warm gradient orb behind the glass panel. */
+.hero__orb {
+  position: absolute;
+  width: min(78%, 420px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 40deg,
+    rgba(246, 196, 69, 0.55),
+    rgba(227, 154, 52, 0.35),
+    rgba(107, 163, 104, 0.3),
+    rgba(246, 196, 69, 0.55)
+  );
+  filter: blur(46px);
+  animation: orbSpin 22s linear infinite;
+  translate: calc(var(--mx, 0) * 26px) calc(var(--my, 0) * 20px);
+}
+@keyframes orbSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Thin rotating dashed ring for depth. */
+.hero__halo {
+  position: absolute;
+  width: min(92%, 500px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(178, 110, 32, 0.28);
+  animation: orbSpin 60s linear infinite reverse;
+  translate: calc(var(--mx, 0) * -14px) calc(var(--my, 0) * -10px);
+}
+
+/* Glassmorphism quality panel. */
+.hero__panel {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 360px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: clamp(20px, 2.4vw, 28px);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow: var(--shadow-lg);
+  translate: calc(var(--mx, 0) * 10px) calc(var(--my, 0) * 8px);
+}
+.hero__panel-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--brand-700);
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(107, 74, 43, 0.12);
+}
+html[dir='rtl'] .hero__panel-head { letter-spacing: 0; }
+.hero__panel-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 0 rgba(107, 163, 104, 0.7);
+  animation: pulse 2s infinite;
+}
+.hero__row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  transition: background 0.3s var(--ease), transform 0.3s var(--ease);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.75);
+    transform: translateX(4px);
+  }
+  strong { display: block; font-size: 0.98rem; color: var(--ink); }
+  small { color: var(--ink-2); font-size: 0.82rem; }
+}
+html[dir='rtl'] .hero__row:hover { transform: translateX(-4px); }
+.hero__row-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--grad-warm);
+  color: #fff;
+  box-shadow: 0 10px 20px -10px rgba(224, 123, 38, 0.7);
+  ::ng-deep svg { width: 22px; height: 22px; }
+}
+
 .hero__chip {
   position: absolute;
   display: flex;
   align-items: center;
-  gap: 11px;
+  gap: 9px;
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(10px);
   border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 12px 18px;
+  border-radius: var(--radius-pill);
+  padding: 11px 18px;
   box-shadow: var(--shadow);
   z-index: 3;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--brand-700);
+
+  svg { width: 18px; height: 18px; color: var(--brand); }
 }
 .hero__chip--fresh {
   inset-inline-start: -4%;
-  top: 16%;
+  top: 12%;
   animation: floaty 4.5s var(--ease) infinite alternate;
   translate: calc(var(--mx, 0) * 20px) calc(var(--my, 0) * 16px);
 
-  .hero__chip-egg { font-size: 1.8rem; }
-  strong { display: block; font-size: 1rem; color: var(--ink); }
-  small { color: var(--ink-2); font-size: 0.82rem; }
+  svg { color: var(--yolk-deep); }
 }
 .hero__chip--grade {
   inset-inline-end: -2%;
-  bottom: 12%;
+  bottom: 10%;
   translate: calc(var(--mx, 0) * -16px) calc(var(--my, 0) * -12px);
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--brand-700);
   animation: floaty 5s var(--ease) infinite alternate-reverse;
 
-  svg { width: 18px; height: 18px; color: var(--brand); }
+  svg { color: var(--green); }
 }
 @keyframes floaty {
   from { transform: translateY(0); }
@@ -257,17 +356,23 @@
   .hero__desc { margin-inline: auto; }
   .hero__actions { justify-content: center; }
   .hero__stats { justify-content: center; }
-  .hero__scene { order: -1; max-width: 380px; margin-inline: auto; }
+  .hero__scene { order: -1; max-width: 420px; margin-inline: auto; min-height: 0; padding-block: 26px; }
   .hero__chip--fresh { inset-inline-start: -2%; }
 }
 
 @media (max-width: 600px) {
   .hero__stats { gap: 22px; }
   .hero__actions .btn { flex: 1 1 auto; }
-  .hero__chip--fresh strong { font-size: 0.9rem; }
+  /* The chips repeat the panel rows and collide with the panel on small
+     screens — the panel carries the message alone. */
+  .hero__chip { display: none; }
   .hero__scroll { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero__blob, .hero__sun, .hero__chip { animation: none; translate: none; }
+  .hero__blob, .hero__sun, .hero__chip, .hero__orb, .hero__halo, .hero__panel-dot {
+    animation: none;
+    translate: none;
+  }
+  .hero__panel { translate: none; }
 }

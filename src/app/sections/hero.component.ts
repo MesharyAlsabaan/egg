@@ -3,17 +3,19 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  computed,
   inject,
   viewChild,
 } from '@angular/core';
 import { I18nService } from '../core/i18n/i18n.service';
 import { RevealDirective } from '../shared/directives/reveal.directive';
 import { MotionService } from '../core/motion/motion.service';
+import { SafeHtmlPipe } from '../shared/pipes/safe-html.pipe';
 
 @Component({
   selector: 'app-hero',
   standalone: true,
-  imports: [RevealDirective],
+  imports: [RevealDirective, SafeHtmlPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section #section id="home" class="hero">
@@ -62,16 +64,32 @@ import { MotionService } from '../core/motion/motion.service';
         </div>
 
         <div class="hero__scene" appReveal="2">
-          <div class="hero__chip hero__chip--fresh">
-            <span class="hero__chip-egg">🥚</span>
-            <div>
-              <strong>{{ i18n.isRtl() ? 'طازج 100%' : '100% Fresh' }}</strong>
-              <small>{{ i18n.isRtl() ? 'يُجمع كل صباح' : 'Collected daily' }}</small>
+          <span class="hero__orb" aria-hidden="true"></span>
+          <span class="hero__halo" aria-hidden="true"></span>
+
+          <div class="hero__panel">
+            <div class="hero__panel-head">
+              <span class="hero__panel-dot"></span>
+              <span>{{ i18n.isRtl() ? 'جودة موثوقة' : 'Trusted quality' }}</span>
             </div>
+            @for (row of highlights(); track row.title) {
+              <div class="hero__row">
+                <span class="hero__row-icon" [innerHTML]="row.icon | safeHtml"></span>
+                <div>
+                  <strong>{{ row.title }}</strong>
+                  <small>{{ row.sub }}</small>
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="hero__chip hero__chip--fresh">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v3M4.2 10.2 6 12M2 18h20M18 12l1.8-1.8M5 18a7 7 0 0 1 14 0"/></svg>
+            <span>{{ i18n.isRtl() ? 'طازج كل صباح' : 'Fresh every morning' }}</span>
           </div>
           <div class="hero__chip hero__chip--grade">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
-            <span>{{ i18n.isRtl() ? 'مرّر لمشاهدة الكسر' : 'Scroll to watch it crack' }}</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+            <span>{{ i18n.isRtl() ? 'جودة درجة أ' : 'Grade A quality' }}</span>
           </div>
         </div>
       </div>
@@ -92,6 +110,29 @@ export class HeroComponent implements AfterViewInit {
   private readonly accent = viewChild<ElementRef<HTMLElement>>('accent');
   private readonly cta = viewChild<ElementRef<HTMLElement>>('cta');
   private readonly section = viewChild<ElementRef<HTMLElement>>('section');
+
+  private readonly icons = {
+    sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v3M4.2 10.2 6 12M2 18h20M18 12l1.8-1.8M5 18a7 7 0 0 1 14 0"/></svg>',
+    shield:
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg>',
+    truck:
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v9H3zM14 9h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.6"/><circle cx="17" cy="18" r="1.6"/></svg>',
+  };
+
+  /** Bilingual quality highlights for the glass panel (matches chip pattern). */
+  readonly highlights = computed(() =>
+    this.i18n.isRtl()
+      ? [
+          { icon: this.icons.sun, title: 'طازج 100%', sub: 'يُجمع كل صباح' },
+          { icon: this.icons.shield, title: 'جودة درجة أ', sub: 'فرز وفحص يومي' },
+          { icon: this.icons.truck, title: 'توصيل يومي', sub: 'من المزرعة إلى بابك' },
+        ]
+      : [
+          { icon: this.icons.sun, title: '100% Fresh', sub: 'Collected every morning' },
+          { icon: this.icons.shield, title: 'Grade A quality', sub: 'Graded & inspected daily' },
+          { icon: this.icons.truck, title: 'Daily delivery', sub: 'Farm to your door' },
+        ],
+  );
 
   ngAfterViewInit(): void {
     const title = this.title()?.nativeElement;

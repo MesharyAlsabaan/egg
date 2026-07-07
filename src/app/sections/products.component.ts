@@ -3,12 +3,14 @@ import { I18nService } from '../core/i18n/i18n.service';
 import { MotionService } from '../core/motion/motion.service';
 import { SectionHeadingComponent } from '../shared/components/section-heading.component';
 import { RevealDirective } from '../shared/directives/reveal.directive';
-import { EggComponent, EggTone } from '../shared/components/egg.component';
+import { SafeHtmlPipe } from '../shared/pipes/safe-html.pipe';
+
+type ProductTone = 'white' | 'brown' | 'golden';
 
 @Component({
   selector: 'app-products',
   standalone: true,
-  imports: [SectionHeadingComponent, RevealDirective, EggComponent],
+  imports: [SectionHeadingComponent, RevealDirective, SafeHtmlPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section id="products" class="section section--tint">
@@ -24,7 +26,7 @@ import { EggComponent, EggTone } from '../shared/components/egg.component';
             <article class="product card" appReveal [appReveal]="i + 1">
               <div class="product__media" [attr.data-tone]="p.tone">
                 <span class="product__glow"></span>
-                <span class="product__egg"><app-egg [tone]="p.tone" [speckled]="p.speckled" [label]="p.name" /></span>
+                <span class="product__icon" [innerHTML]="p.icon | safeHtml"></span>
                 <span class="product__tag">{{ p.tag }}</span>
               </div>
               <div class="product__body">
@@ -103,16 +105,27 @@ import { EggComponent, EggTone } from '../shared/components/egg.component';
         filter: blur(6px);
         transition: transform 0.6s var(--ease), opacity 0.6s var(--ease);
       }
-      .product__egg {
+      /* Glass medallion with a line icon per product line. */
+      .product__icon {
         position: relative;
         z-index: 1;
-        width: 46%;
-        height: 78%;
-        display: block;
-        transition: transform 0.6s var(--ease);
-        filter: drop-shadow(0 18px 22px rgba(107, 74, 43, 0.28));
+        display: grid;
+        place-items: center;
+        width: 104px;
+        height: 104px;
+        border-radius: 32px;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.85);
+        box-shadow: 0 22px 34px -20px rgba(107, 74, 43, 0.45);
+        color: var(--brand-700);
+        transition: transform 0.6s var(--ease), box-shadow 0.6s var(--ease);
+        ::ng-deep svg { width: 46px; height: 46px; }
       }
-      .product:hover .product__egg { transform: translateY(-8px) rotate(-4deg) scale(1.05); }
+      .product:hover .product__icon {
+        transform: translateY(-8px) rotate(-4deg) scale(1.06);
+        box-shadow: 0 30px 44px -22px rgba(107, 74, 43, 0.55);
+      }
       .product:hover .product__glow { transform: scale(1.15); opacity: 0.85; }
       .product__tag {
         position: absolute;
@@ -153,7 +166,7 @@ import { EggComponent, EggTone } from '../shared/components/egg.component';
       @media (max-width: 860px) { .products { grid-template-columns: repeat(2, 1fr); max-width: 640px; } }
       @media (max-width: 520px) { .products { grid-template-columns: 1fr; max-width: 360px; } }
       @media (prefers-reduced-motion: reduce) {
-        .product:hover .product__egg { transform: none; }
+        .product:hover .product__icon { transform: none; }
         .product__media::before { display: none; }
       }
     `,
@@ -196,11 +209,20 @@ export class ProductsComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  /** Egg art per product slot (white / brown-speckled / golden premium). */
-  private readonly meta: { tone: EggTone; speckled: boolean }[] = [
-    { tone: 'white', speckled: false },
-    { tone: 'brown', speckled: true },
-    { tone: 'golden', speckled: false },
+  /** Tinted media + line icon per product slot (white / brown / golden premium). */
+  private readonly meta: { tone: ProductTone; icon: string }[] = [
+    {
+      tone: 'white',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4"/><circle cx="12" cy="12" r="4"/></svg>',
+    },
+    {
+      tone: 'brown',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4s1 10-6 12c-4-6 6-12 6-12Z"/><path d="M17 8c-3 2-4.5 5-5 8.5"/><path d="M4 20c0-4 3-7 8-7"/></svg>',
+    },
+    {
+      tone: 'golden',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 4 4 5-6 5 6 4-4v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg>',
+    },
   ];
 
   readonly products = computed(() =>

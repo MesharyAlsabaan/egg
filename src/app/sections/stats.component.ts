@@ -19,9 +19,8 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
     <section class="stats">
       <div class="stats__bg" aria-hidden="true">
         <span class="stats__sheen"></span>
-        <span class="stats__egg stats__egg--1"></span>
-        <span class="stats__egg stats__egg--2"></span>
-        <span class="stats__egg stats__egg--3"></span>
+        <span class="stats__orb stats__orb--1"></span>
+        <span class="stats__orb stats__orb--2"></span>
       </div>
       <div class="container">
         <h2 class="stats__title h-section" appReveal>{{ t().stats.title }}</h2>
@@ -75,24 +74,21 @@ import { RevealDirective } from '../shared/directives/reveal.directive';
         0% { transform: translate(-8%, -6%) scale(1); }
         100% { transform: translate(8%, 6%) scale(1.15); }
       }
-      .stats__egg {
+      .stats__orb {
         position: absolute;
-        width: 90px;
-        height: 116px;
-        border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-        background: radial-gradient(circle at 38% 28%, rgba(255,255,255,0.16), rgba(255,255,255,0.04));
+        border-radius: 50%;
+        background: radial-gradient(circle at 38% 28%, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.02));
         border: 1px solid rgba(255, 255, 255, 0.1);
         animation: statsFloat 9s var(--ease) infinite alternate;
       }
-      .stats__egg--1 { top: 12%; inset-inline-start: 6%; }
-      .stats__egg--2 { bottom: 8%; inset-inline-end: 12%; width: 64px; height: 82px; animation-delay: 2s; }
-      .stats__egg--3 { top: 40%; inset-inline-end: 34%; width: 44px; height: 56px; animation-delay: 4s; opacity: 0.7; }
+      .stats__orb--1 { top: 10%; inset-inline-start: 6%; width: 110px; height: 110px; }
+      .stats__orb--2 { bottom: 8%; inset-inline-end: 10%; width: 70px; height: 70px; animation-delay: 3s; }
       @keyframes statsFloat {
-        from { transform: translateY(0) rotate(-6deg); }
-        to { transform: translateY(-24px) rotate(6deg); }
+        from { transform: translateY(0); }
+        to { transform: translateY(-22px); }
       }
       @media (prefers-reduced-motion: reduce) {
-        .stats__sheen, .stats__egg { animation: none; }
+        .stats__sheen, .stats__orb { animation: none; }
       }
       .stats__title {
         text-align: center;

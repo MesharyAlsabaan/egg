@@ -20,8 +20,6 @@ import { GalleryComponent } from '../sections/gallery.component';
 import { ContactComponent } from '../sections/contact.component';
 import { FooterComponent } from '../sections/footer.component';
 import { MotionService } from '../core/motion/motion.service';
-import { EggComponent } from '../shared/components/egg.component';
-import { PageVideoComponent } from '../shared/components/page-video.component';
 
 @Component({
   selector: 'app-landing',
@@ -38,24 +36,17 @@ import { PageVideoComponent } from '../shared/components/page-video.component';
     GalleryComponent,
     ContactComponent,
     FooterComponent,
-    EggComponent,
-    PageVideoComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <app-page-video />
-    <app-navbar />
-
-    <!-- Egg that rolls down the page edge as you scroll top → bottom -->
-    <div
-      class="roller"
-      [style.--p]="progress()"
-      [style.--dir]="dirSign"
-      aria-hidden="true"
-    >
-      <span class="roller__track"></span>
-      <span class="roller__egg"><app-egg tone="golden" /></span>
+    <!-- Fixed, slowly-drifting aurora wash behind every section. -->
+    <div class="aurora" aria-hidden="true">
+      <span class="aurora__blob aurora__blob--1"></span>
+      <span class="aurora__blob aurora__blob--2"></span>
+      <span class="aurora__blob aurora__blob--3"></span>
     </div>
+
+    <app-navbar />
 
     <main id="main">
       <app-hero />
@@ -122,50 +113,51 @@ import { PageVideoComponent } from '../shared/components/page-video.component';
         z-index: -1;
       }
 
-      /* -------------------- Rolling egg (page-wide) ------------------ */
-      .roller {
+      /* ----------------------- Aurora backdrop ----------------------- */
+      .aurora {
         position: fixed;
-        top: calc(var(--header-h) + 6px);
-        inset-inline-start: clamp(6px, 1.6vw, 22px);
-        z-index: 70;
-        width: clamp(34px, 4vw, 48px);
-        height: clamp(43px, 5vw, 60px);
-        pointer-events: none;
-        /* Travel from just under the header to just above the viewport floor,
-           mapped 1:1 to whole-page scroll progress (0 → 1). */
-        transform: translateY(calc(var(--p, 0) * (100svh - var(--header-h) - 96px)));
-        will-change: transform;
-      }
-      .roller__egg {
-        display: block;
-        width: 100%;
-        height: 100%;
-        /* Spin many turns over the full page so it reads as "rolling". */
-        transform: rotate(calc(var(--p, 0) * 1800deg * var(--dir, 1)));
-        filter: drop-shadow(0 6px 10px rgba(178, 110, 32, 0.35));
-      }
-      .roller__track {
-        position: absolute;
-        inset-inline-start: 50%;
-        top: -6px;
-        transform: translateX(-50%);
-        width: 3px;
-        height: calc(100svh - var(--header-h) - 40px);
-        border-radius: 3px;
-        background: repeating-linear-gradient(
-          to bottom,
-          rgba(227, 154, 52, 0.35) 0 6px,
-          transparent 6px 14px
-        );
+        inset: 0;
         z-index: -1;
-        opacity: 0.5;
+        overflow: hidden;
+        background: var(--cream);
       }
-      @media (max-width: 600px) {
-        .roller__track { display: none; }
-        .roller { inset-inline-start: 4px; }
+      .aurora__blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(90px);
+        opacity: 0.5;
+        will-change: transform;
+        animation: auroraDrift 26s var(--ease-soft) infinite alternate;
+      }
+      .aurora__blob--1 {
+        width: 56vmax;
+        height: 56vmax;
+        top: -22vmax;
+        inset-inline-start: -14vmax;
+        background: radial-gradient(circle, rgba(246, 196, 69, 0.4), transparent 65%);
+      }
+      .aurora__blob--2 {
+        width: 46vmax;
+        height: 46vmax;
+        bottom: -18vmax;
+        inset-inline-end: -12vmax;
+        background: radial-gradient(circle, rgba(107, 163, 104, 0.32), transparent 65%);
+        animation-delay: -9s;
+      }
+      .aurora__blob--3 {
+        width: 38vmax;
+        height: 38vmax;
+        top: 34%;
+        inset-inline-start: 30%;
+        background: radial-gradient(circle, rgba(227, 154, 52, 0.22), transparent 65%);
+        animation-delay: -18s;
+      }
+      @keyframes auroraDrift {
+        from { transform: translate(-3%, -2%) scale(1); }
+        to { transform: translate(3%, 3%) scale(1.1); }
       }
       @media (prefers-reduced-motion: reduce) {
-        .roller__egg { transform: none; }
+        .aurora__blob { animation: none; }
       }
     `,
   ],
@@ -175,11 +167,6 @@ export class LandingComponent implements OnInit, OnDestroy {
   private readonly host = inject(ElementRef<HTMLElement>);
   readonly showTop = signal(false);
   readonly progress = signal(0);
-
-  /** Roll the egg the "natural" way for the current writing direction. */
-  get dirSign(): number {
-    return typeof document !== 'undefined' && document.documentElement.dir === 'rtl' ? -1 : 1;
-  }
 
   // init() runs in ngOnInit (not ngAfterViewInit) so the GSAP plugin is
   // registered and Lenis is running BEFORE child section components wire their
@@ -222,7 +209,7 @@ export class LandingComponent implements OnInit, OnDestroy {
   onScroll(): void {
     this.showTop.set(window.scrollY > 600);
     // Fallback progress when smooth-scroll/GSAP is off (e.g. reduced motion),
-    // so the rolling egg still tracks the whole page top → bottom.
+    // so the to-top progress ring still tracks the whole page.
     if (!this.motion.enabled) {
       const doc = document.documentElement;
       const max = doc.scrollHeight - window.innerHeight;

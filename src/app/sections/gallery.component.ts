@@ -139,7 +139,7 @@ export class GalleryComponent implements AfterViewInit {
     {
       en: 'Daily collection', ar: 'جمع يومي', span: '',
       grad: 'linear-gradient(150deg,#e9f2df,#cfe4be)',
-      icon: this.s('<ellipse cx="24" cy="34" rx="8" ry="11"/><ellipse cx="40" cy="34" rx="8" ry="11"/><path d="M12 48h40"/>'),
+      icon: this.s('<path d="M14 28h36l-5 20H19z"/><path d="M22 28l10-14 10 14"/><path d="M26 36v6M32 36v6M38 36v6"/>'),
     },
     {
       en: 'Precision grading', ar: 'فرز دقيق', span: '',

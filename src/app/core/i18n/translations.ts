@@ -136,7 +136,7 @@ const en: Dictionary = {
   },
   about: {
     eyebrow: 'About Us',
-    title: 'A family name built on freshness & trust',
+    title: 'A family name built on trust',
     story:
       'Family Eggs For Trading Co. raises healthy hens on modern farms near Marat in the Riyadh region of Saudi Arabia. We combine solar-powered facilities with genuine family care to produce fresh Saudi white eggs that reach your table at their absolute freshest.',
     mission: 'Our Mission',
@@ -298,7 +298,7 @@ const ar: Dictionary = {
   },
   about: {
     eyebrow: 'من نحن',
-    title: 'اسم عائلي بُني على الطزاجة والثقة',
+    title: 'اسم عائلي بُني على الثقة',
     story:
       'تربّي شركة بيض العائلة للتجارة دجاجاً سليماً في مزارع حديثة بمحافظة مرات في منطقة الرياض بالمملكة العربية السعودية. نجمع بين المرافق العاملة بالطاقة الشمسية واهتمام العائلة الحقيقي لإنتاج بيض سعودي أبيض طازج يصل إلى مائدتك في أفضل درجات طزاجته.',
     mission: 'رسالتنا',
