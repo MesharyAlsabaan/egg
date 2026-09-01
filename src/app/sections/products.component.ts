@@ -6,10 +6,10 @@ import { RevealDirective } from '../shared/reveal.directive';
 /**
  * The only place sizes and pack contents appear.
  *
- * There is no photograph of the three sizes side by side, so the scale is
- * drawn: three ellipses at 0.86 / 1 / 1.12 relative height. That is an honest
- * "this one is bigger than that one" cue and nothing more — no gram weights,
- * because none are in the approved data.
+ * There is no photograph of the six grades side by side, so the scale is
+ * drawn: one ellipse per grade, stepping about 6% each. That is an honest
+ * "this one is bigger than that one" cue and nothing more — the steps are not
+ * a weight ratio, because no gram weights exist in the approved data.
  */
 @Component({
   selector: 'app-products',
@@ -98,7 +98,7 @@ import { RevealDirective } from '../shared/reveal.directive';
     .sizes {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: clamp(0.75rem, 3vw, 2rem);
+      gap: clamp(1.25rem, 5vw, 2rem) clamp(0.75rem, 3vw, 1.5rem);
     }
 
     .size {
@@ -126,6 +126,8 @@ import { RevealDirective } from '../shared/reveal.directive';
     .size__name {
       font-size: var(--step-1);
       font-weight: 700;
+      letter-spacing: 0.02em;
+      font-variant-numeric: tabular-nums;
       margin-block-start: 0.6rem;
     }
 
@@ -181,11 +183,13 @@ import { RevealDirective } from '../shared/reveal.directive';
       font-weight: 600;
     }
 
-    @media (min-width: 820px) {
+    @media (min-width: 720px) {
       .sizes {
-        max-width: 34rem;
+        grid-template-columns: repeat(6, 1fr);
       }
+    }
 
+    @media (min-width: 820px) {
       .specs {
         grid-template-columns: repeat(2, 1fr);
         gap: 0.9rem clamp(1.5rem, 4vw, 3rem);
@@ -195,6 +199,6 @@ import { RevealDirective } from '../shared/reveal.directive';
 })
 export class ProductsComponent {
   protected readonly t = inject(I18nService).t;
-  /** Relative heights for small / large / XL. */
-  protected readonly scale = [0.86, 1, 1.12];
+  /** Relative heights, largest first, matching the order of `sizes`. */
+  protected readonly scale = [1.12, 1.06, 1.0, 0.94, 0.88, 0.82];
 }

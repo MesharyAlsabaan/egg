@@ -164,12 +164,15 @@ const AR: Dictionary = {
   products: {
     eyebrow: 'المنتجات',
     title: 'المقاسات والعبوات.',
-    body: 'ثلاثة مقاسات متوفرة، وعبوتان جاهزتان للتوريد.',
+    body: 'ستة مقاسات متوفرة، وعبوتان جاهزتان للتوريد.',
     sizesLabel: 'المقاسات المتوفرة',
     sizes: [
-      { id: 'small', name: 'صغير' },
-      { id: 'large', name: 'كبير' },
-      { id: 'xl', name: 'كبير جداً' },
+      { id: 'xx', name: 'XX' },
+      { id: 'xl', name: 'XL' },
+      { id: 'l1', name: 'L1' },
+      { id: 'l2', name: 'L2' },
+      { id: 'm', name: 'M' },
+      { id: 's', name: 'S' },
     ],
     packLabel: 'العبوات',
     packs: [
@@ -276,12 +279,15 @@ const EN: Dictionary = {
   products: {
     eyebrow: 'Products',
     title: 'Sizes and packaging.',
-    body: 'Three available sizes, and two packs ready for supply.',
+    body: 'Six available grades, and two packs ready for supply.',
     sizesLabel: 'Available sizes',
     sizes: [
-      { id: 'small', name: 'Small' },
-      { id: 'large', name: 'Large' },
+      { id: 'xx', name: 'XX' },
       { id: 'xl', name: 'XL' },
+      { id: 'l1', name: 'L1' },
+      { id: 'l2', name: 'L2' },
+      { id: 'm', name: 'M' },
+      { id: 's', name: 'S' },
     ],
     packLabel: 'Packs',
     packs: [
