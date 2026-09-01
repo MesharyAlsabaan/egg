@@ -278,6 +278,41 @@ def build_automation() -> None:
           f"{(OUT / 'automation.mp4').stat().st_size / 1024 / 1024:5.2f} MB")
 
 
+def adopt_supplied() -> None:
+    """Take a hero cut delivered as finished files rather than building one.
+
+    ../../videos/hero-desktop.mp4 and hero-mobile.mp4 are copied in as-is and
+    the posters are re-derived FROM THEM. The posters have to come from the
+    file actually being played: a poster from a different edit shows one frame
+    and then jumps to another the moment playback starts.
+    """
+    import shutil
+
+    print("adopting supplied hero cut")
+    for stem, poster_stem, widths in (
+        ("hero-desktop", "hero-poster-desktop", (1280, 1600, 1920)),
+        ("hero-mobile", "hero-poster-mobile", (720, 900, 1080)),
+    ):
+        source = SRC / f"{stem}.mp4"
+        if not source.exists():
+            raise SystemExit(f"missing supplied cut: {source}")
+        shutil.copy2(source, OUT / f"{stem}.mp4")
+        WORK.mkdir(exist_ok=True)
+        poster(source, poster_stem, 0.25, widths)
+        size = (OUT / f"{stem}.mp4").stat().st_size / 1024 / 1024
+        print(f"  {stem}.mp4  {size:5.2f} MB")
+
+    # The automation section's clip comes from the same delivery, so the two
+    # videos on the page share a grade. Built from our own footage they would
+    # not: the supplied hero is a warmer look than tools/build-hero.py makes.
+    line = SRC / "Enhanced" / "04-automated-egg-line_web.mp4"
+    if line.exists():
+        shutil.copy2(line, OUT / "automation.mp4")
+        poster(line, "automation-poster", 2.4, (768, 1280, 1600))
+        size = (OUT / "automation.mp4").stat().st_size / 1024 / 1024
+        print(f"  automation.mp4  {size:5.2f} MB  (Enhanced/04, no people in frame)")
+
+
 def build_stills() -> None:
     """Before/after proof sheet, so the grade is judged on frames rather than
     trusted because the encode succeeded."""
@@ -345,6 +380,10 @@ def main() -> None:
         return
     if "framing" in stages:
         build_framing()
+        return
+
+    if "adopt" in stages:
+        adopt_supplied()
         return
 
     if "desktop" in stages:
