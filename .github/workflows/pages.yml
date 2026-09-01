@@ -1,0 +1,67 @@
+name: Deploy to GitHub Pages
+
+# Builds the prerendered site and publishes it. The repository owner has to
+# switch Settings -> Pages -> Source to "GitHub Actions" once; after that every
+# push to master deploys automatically.
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # A project page is served from /<repo>/, so the base href has to match
+      # or every asset and route resolves against the account root instead.
+      - name: Build with the project base href
+        run: npx ng build --base-href "/${GITHUB_REPOSITORY#*/}/"
+
+      - name: Adjust for the project subpath
+        run: |
+          cd dist/family-eggs-landing/browser
+          touch .nojekyll
+          # Pages serves 404.html for anything unmatched; send it to Arabic,
+          # which is what the router does for an unknown route anyway.
+          cp ar/index.html 404.html
+          # styles.scss loads the brand font from /fonts/, which is right on
+          # familyeggs.sa but resolves above the project root on a Pages
+          # subpath. The stylesheet sits beside the fonts folder, so a relative
+          # URL is correct at both. The @font-face block is ALSO inlined as
+          # critical CSS into each prerendered page, so both have to be
+          # rewritten - fixing only the stylesheet still 404s the brand font.
+          find . -type f \( -name '*.html' -o -name '*.css' \)             -exec sed -i 's#url(/fonts/#url(fonts/#g' {} +
+          test "$(grep -rho 'url(/fonts/' . | wc -l)" = "0"             || { echo 'absolute font URLs still present'; exit 1; }
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/family-eggs-landing/browser
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

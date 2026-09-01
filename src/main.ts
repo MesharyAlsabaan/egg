@@ -11,14 +11,20 @@ if ('scrollRestoration' in history) {
 // Language preference, applied before the router sees the URL. This is
 // deliberately outside the routing config: it is browser-only state, and
 // putting it in a guard is what stopped the prerender pass from walking the
-// routes. Only a bare "/" is redirected, so a shared /ar or /en link always
-// opens in the language it names.
-if (location.pathname === '/' || location.pathname === '') {
+// routes. Only the site root is redirected, so a shared /ar or /en link
+// always opens in the language it names.
+//
+// Read against <base href> rather than "/", because a project-page deploy
+// serves the site from a subpath.
+const base = document.querySelector('base')?.getAttribute('href') || '/';
+const atRoot = location.pathname === base || `${location.pathname}/` === base;
+
+if (atRoot) {
   try {
     const stored = localStorage.getItem('familyeggs.lang');
     const preferred = stored ?? (navigator.language?.startsWith('en') ? 'en' : 'ar');
     if (preferred === 'ar' || preferred === 'en') {
-      history.replaceState(null, '', `/${preferred}${location.search}${location.hash}`);
+      history.replaceState(null, '', `${base}${preferred}${location.search}${location.hash}`);
     }
   } catch {
     // Storage blocked: the router's own redirect to /ar takes over.
