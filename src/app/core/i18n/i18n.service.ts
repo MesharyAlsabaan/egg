@@ -1,48 +1,45 @@
-import { Injectable, computed, signal, effect, inject, DOCUMENT } from '@angular/core';
-import { CONTENT, Dictionary, Lang } from './translations';
+import { DOCUMENT, Injectable, computed, inject, signal } from '@angular/core';
 
-const STORAGE_KEY = 'fe-lang';
+import { DICTIONARIES, type Dictionary, type Lang } from './dictionary';
 
+const STORAGE_KEY = 'familyeggs.lang';
+
+export const LANGS: readonly Lang[] = ['ar', 'en'];
+
+export function isLang(value: unknown): value is Lang {
+  return value === 'ar' || value === 'en';
+}
+
+/**
+ * The single source of the active language.
+ *
+ * Components read `t()` and never hold their own copy of a string. Setting
+ * the language also rewrites `lang` and `dir` on <html>, which is what flips
+ * every logical property in the stylesheet — no per-component RTL branches.
+ */
 @Injectable({ providedIn: 'root' })
 export class I18nService {
   private readonly doc = inject(DOCUMENT);
 
-  /** Active language as a reactive signal. */
-  readonly lang = signal<Lang>(this.initialLang());
+  private readonly current = signal<Lang>('ar');
 
-  /** Strongly-typed dictionary for the active language. */
-  readonly t = computed<Dictionary>(() => CONTENT[this.lang()]);
+  readonly lang = this.current.asReadonly();
+  readonly dir = computed<'rtl' | 'ltr'>(() => (this.current() === 'ar' ? 'rtl' : 'ltr'));
+  readonly t = computed<Dictionary>(() => DICTIONARIES[this.current()]);
+  readonly other = computed<Lang>(() => (this.current() === 'ar' ? 'en' : 'ar'));
 
-  /** Layout direction derived from language. */
-  readonly dir = computed<'rtl' | 'ltr'>(() => (this.lang() === 'ar' ? 'rtl' : 'ltr'));
+  apply(lang: Lang): void {
+    this.current.set(lang);
 
-  readonly isRtl = computed(() => this.lang() === 'ar');
+    const root = this.doc.documentElement;
+    root.setAttribute('lang', lang);
+    root.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
 
-  constructor() {
-    // Keep <html> lang/dir and persistence in sync with the signal.
-    effect(() => {
-      const lang = this.lang();
-      const html = this.doc.documentElement;
-      html.setAttribute('lang', lang);
-      html.setAttribute('dir', this.dir());
-      try {
-        localStorage.setItem(STORAGE_KEY, lang);
-      } catch {
-        /* storage unavailable — non-fatal */
-      }
-    });
+    try {
+      this.doc.defaultView?.localStorage.setItem(STORAGE_KEY, lang);
+    } catch {
+      // Private mode or storage disabled: the URL still carries the language.
+    }
   }
 
-  toggle(): void {
-    this.lang.update((l) => (l === 'en' ? 'ar' : 'en'));
-  }
-
-  setLang(lang: Lang): void {
-    this.lang.set(lang);
-  }
-
-  private initialLang(): Lang {
-    // Site is Arabic-only.
-    return 'ar';
-  }
 }

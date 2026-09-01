@@ -1,131 +1,183 @@
 /* =====================================================================
-   Family Eggs For Trading Co. — Premium Design System (v2, photo-free)
-   A warm, editorial, light-luxury palette built entirely from CSS + SVG.
-     • Honey / Amber  #E39A34  (brand / carton)
-     • Yolk Gold       #F6C445  (glow / accent)
-     • Sage Green      #6BA368  (freshness / leaf)
-     • Cocoa Brown     #6B4A2B  (grounding accent)
+   Family Eggs For Trading Co. — Design System
+   Built from "family egg FINAL 31-8-2026.pdf" (the brand file is the
+   single source of truth; nothing here is invented).
+
+   Palette, verbatim from the brand sheet:
+     #283C22  dark green     #657331  olive      #B6BC76  light green
+     #F49320  orange         #C3512E  red-orange #F8F9F6  ivory
+
+   Typeface: Madani Arabic (brand), self-hosted from the licensed masters.
+   Built by tools/build-fonts.py — 24 KB per weight as WOFF2.
    ===================================================================== */
 
+/* Every master reports usWeightClass 400 and subfamily "Regular", each under
+   its own family name. These descriptors are what give the browser a real
+   weight axis to work with, so never drop the font-weight lines below. */
+@font-face {
+  font-family: 'Madani Arabic';
+  src: url('/fonts/madani-arabic-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Madani Arabic';
+  src: url('/fonts/madani-arabic-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Madani Arabic';
+  src: url('/fonts/madani-arabic-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Madani Arabic';
+  src: url('/fonts/madani-arabic-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
-  /* Brand */
-  --brand: #e39a34;
-  --brand-600: #d0842a;
-  --brand-700: #b26e20;
-  --brand-soft: #fbecd7;
-  --brand-tint: #fdf5ea;
+  /* ---- Brand ---- */
+  --ink: #283c22;
+  --olive: #657331;
+  --sage: #b6bc76;
+  --orange: #f49320;
+  --terra: #c3512e;
+  --ivory: #f8f9f6;
 
-  --yolk: #f6c445;
-  --yolk-deep: #f0ad2e;
-  --yolk-soft: #fdeec1;
+  /* ---- Derived (tints/shades of the six above only) ---- */
+  --ink-deep: #1a2716;
+  --ink-soft: #35502c;
+  --olive-soft: #7d8c45;
+  --sage-soft: #d3d7a9;
+  --orange-deep: #d97c12;
+  --ivory-line: #e4e7dd;
+  --ivory-dim: #eceee6;
 
-  --green: #6ba368;
-  --green-600: #558a52;
-  --green-soft: #e7f1e5;
+  /* On dark ground */
+  --on-ink: #f8f9f6;
+  --on-ink-dim: #c2c9b6;
 
-  --cocoa: #6b4a2b;
+  /* On light ground */
+  --on-ivory: #283c22;
+  --on-ivory-dim: #5c6b52;
 
-  /* Neutrals (warm) */
-  --ink: #2a2620;
-  --ink-2: #635b50;
-  --muted: #948a7d;
-  --line: #ece4d7;
-  --line-soft: #f2ebe0;
-  --cream: #fbf8f2;
-  --cream-2: #f6f0e6;
-  --paper: #fffdf9;
-  --white: #ffffff;
+  /* Secondary body text. Sections on the dark ground override it — #5c6b52
+     on #283C22 is only 2.1:1. */
+  --muted: var(--on-ivory-dim);
 
-  /* Effects */
-  --radius-sm: 14px;
-  --radius: 22px;
-  --radius-lg: 32px;
-  --radius-pill: 999px;
-  --shadow-sm: 0 2px 12px rgba(42, 38, 32, 0.05);
-  --shadow: 0 18px 46px -22px rgba(42, 38, 32, 0.28);
-  --shadow-lg: 0 40px 80px -30px rgba(178, 110, 32, 0.4);
-  --ring: 0 0 0 4px rgba(227, 154, 52, 0.2);
+  /* Small accent text. Orange on ivory is only 2.2:1, so light surfaces use
+     olive (4.9:1) and dark surfaces keep the orange (4.9:1 on #283C22).
+     Sections with an ink background override this to --orange. */
+  --accent: var(--olive);
 
-  --container: 1200px;
-  --header-h: 78px;
+  /* ---- Type ---- */
+  --font-brand: 'Madani Arabic';
+  --font: var(--font-brand), system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-  --grad-warm: linear-gradient(135deg, #f6c445 0%, #e39a34 52%, #d0842a 100%);
-  --grad-sun: radial-gradient(circle at 38% 34%, #fbe08a 0%, #f6c445 40%, #eda52c 100%);
-  --grad-cream: linear-gradient(180deg, #fffdf9 0%, #fbf8f2 100%);
+  --step--1: clamp(0.8125rem, 0.79rem + 0.11vw, 0.875rem);
+  --step-0: clamp(1rem, 0.97rem + 0.15vw, 1.0625rem);
+  --step-1: clamp(1.125rem, 1.06rem + 0.32vw, 1.3125rem);
+  --step-2: clamp(1.375rem, 1.24rem + 0.66vw, 1.75rem);
+  --step-3: clamp(1.75rem, 1.5rem + 1.25vw, 2.5rem);
+  --step-4: clamp(2.25rem, 1.75rem + 2.5vw, 3.75rem);
+  --step-5: clamp(3rem, 2.1rem + 4.5vw, 5.5rem);
 
-  --font-en: 'Plus Jakarta Sans', system-ui, sans-serif;
-  --font-ar: 'Cairo', system-ui, sans-serif;
-  --font-display-en: 'Fraunces', Georgia, serif;
-  --font-display-ar: 'El Messiri', 'Cairo', system-ui, sans-serif;
+  /* ---- Space & layout ---- */
+  --gutter: clamp(1.25rem, 5vw, 2.5rem);
+  --container: 1180px;
+  --section-y: clamp(4rem, 10vw, 8rem);
+  --header-h: 56px;
+  --tap: 44px; /* minimum touch target */
 
-  --font: var(--font-en);
-  --font-display: var(--font-display-en);
+  --radius: 4px;
+  --radius-lg: 10px;
 
+  /* ---- Motion ---- */
+  --dur: 620ms;
+  --dur-fast: 260ms;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-html[dir='rtl'] {
-  --font: var(--font-ar);
-  --font-display: var(--font-display-ar);
-}
+/* ---------------------------------------------------------------- reset */
 
-/* ----------------------------- Reset ------------------------------ */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 html {
-  scroll-behavior: smooth;
-  scroll-padding-top: var(--header-h);
   -webkit-text-size-adjust: 100%;
-}
-
-/* Lenis smooth-scroll (recommended setup): while Lenis drives scrolling,
-   native CSS smooth behavior must be off or the two easings fight. */
-html.lenis,
-html.lenis body {
-  height: auto;
-}
-.lenis.lenis-smooth {
-  scroll-behavior: auto !important;
-}
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-.lenis.lenis-stopped {
-  overflow: hidden;
+  scroll-behavior: smooth;
 }
 
 body {
+  margin: 0;
+  background: var(--ivory);
+  color: var(--on-ivory);
   font-family: var(--font);
-  color: var(--ink);
-  background: var(--cream);
+  font-size: var(--step-0);
   line-height: 1.65;
-  font-size: 16px;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-  overflow-x: hidden;
+  font-weight: 400;
+  /* Nothing on this site may cause a sideways scrollbar. */
+  overflow-x: clip;
 }
 
-/* Subtle paper grain over the whole page for a tactile, premium feel. */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 9998;
-  pointer-events: none;
-  opacity: 0.04;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote {
+  margin: 0;
 }
 
-img {
-  max-width: 100%;
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+img,
+video,
+svg {
   display: block;
+  max-width: 100%;
+}
+
+img,
+video {
+  height: auto;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 a {
@@ -133,235 +185,217 @@ a {
   text-decoration: none;
 }
 
-button {
-  font-family: inherit;
-  cursor: pointer;
-  border: none;
-  background: none;
-}
-
-ul {
-  list-style: none;
-}
-
-h1, h2, h3, h4 {
-  font-family: var(--font-display);
-  line-height: 1.12;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--ink);
-}
-
-html[dir='rtl'] h1,
-html[dir='rtl'] h2,
-html[dir='rtl'] h3,
-html[dir='rtl'] h4 {
-  letter-spacing: 0;
-}
+/* ------------------------------------------------------------- a11y */
 
 :focus-visible {
-  outline: none;
-  box-shadow: var(--ring);
-  border-radius: 6px;
+  outline: 3px solid var(--orange);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
-::selection {
-  background: var(--yolk);
-  color: var(--ink);
-}
-
-/* --------------------------- Layout ------------------------------- */
-.container {
-  width: 100%;
-  max-width: var(--container);
-  margin-inline: auto;
-  padding-inline: clamp(20px, 5vw, 44px);
-}
-
-.section {
-  padding-block: clamp(72px, 10vw, 138px);
-  position: relative;
-}
-
-/* Translucent so the fixed aurora backdrop drifts behind every section,
-   while text stays readable. */
-.section--tint { background: rgba(246, 240, 230, 0.62); }
-.section--brand-tint { background: rgba(253, 245, 234, 0.6); }
-.section--dark { background: #241c14; color: #f6efe6; }
-
-/* --------------------------- Typography --------------------------- */
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  font-family: var(--font);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--brand-700);
-  background: var(--brand-soft);
-  padding: 8px 17px;
-  border-radius: var(--radius-pill);
-}
-html[dir='rtl'] .eyebrow { letter-spacing: 0.04em; }
-
-.h-display {
-  font-size: clamp(2.4rem, 6vw, 4.4rem);
-  line-height: 1.06;
-}
-
-.h-section {
-  font-size: clamp(2rem, 4vw, 3rem);
-}
-
-.lead {
-  font-size: clamp(1.02rem, 1.4vw, 1.18rem);
-  color: var(--ink-2);
-  max-width: 60ch;
-}
-
-.text-gradient {
-  background: var(--grad-warm);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-/* --------------------------- Buttons ------------------------------ */
-.btn {
-  --bg: var(--brand);
-  --fg: #fff;
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  font-family: var(--font);
-  font-weight: 700;
-  font-size: 0.98rem;
-  padding: 15px 28px;
-  border-radius: var(--radius-pill);
-  background: var(--bg);
-  color: var(--fg);
-  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease),
-    background 0.3s var(--ease);
-  box-shadow: 0 12px 26px -12px rgba(227, 154, 52, 0.7);
-  white-space: nowrap;
-  overflow: hidden;
-  isolation: isolate;
-}
-/* Sheen sweep on hover */
-.btn::after {
-  content: '';
+.skip-link {
   position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.4) 50%, transparent 70%);
-  transform: translateX(-120%);
-  transition: transform 0.6s var(--ease);
-}
-.btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 20px 36px -14px rgba(227, 154, 52, 0.85);
-}
-.btn:hover::after { transform: translateX(120%); }
-.btn:active { transform: translateY(-1px); }
-
-.btn--ghost {
-  --bg: transparent;
-  --fg: var(--ink);
-  box-shadow: inset 0 0 0 1.5px var(--line);
-}
-.btn--ghost:hover {
-  --bg: var(--white);
-  box-shadow: inset 0 0 0 1.5px var(--brand), 0 14px 26px -16px rgba(0, 0, 0, 0.3);
-}
-
-.btn--light {
-  --bg: #fff;
-  --fg: var(--brand-700);
-  box-shadow: 0 12px 26px -14px rgba(42, 38, 32, 0.35);
-}
-.btn--green {
-  --bg: var(--green);
-  box-shadow: 0 12px 26px -12px rgba(107, 163, 104, 0.7);
-}
-
-.btn svg { width: 18px; height: 18px; }
-
-/* --------------------------- Cards -------------------------------- */
-.card {
-  background: var(--paper);
-  border: 1px solid var(--line);
+  inset-inline-start: var(--gutter);
+  top: -100px;
+  z-index: 999;
+  padding: 0.75rem 1.25rem;
+  background: var(--orange);
+  color: var(--ink);
+  font-weight: 600;
   border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
-  transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease),
-    border-color 0.4s var(--ease);
+  transition: top var(--dur-fast) var(--ease);
+
+  &:focus {
+    top: 0.75rem;
+  }
 }
 
-/* ------------------ Scroll-reveal animation ----------------------- */
-.reveal {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
-  will-change: opacity, transform;
-}
-.reveal.is-visible {
-  opacity: 1;
-  transform: none;
-}
-.reveal[data-delay='1'] { transition-delay: 0.08s; }
-.reveal[data-delay='2'] { transition-delay: 0.16s; }
-.reveal[data-delay='3'] { transition-delay: 0.24s; }
-.reveal[data-delay='4'] { transition-delay: 0.32s; }
-.reveal[data-delay='5'] { transition-delay: 0.4s; }
-
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  .reveal { opacity: 1; transform: none; transition: none; }
-  * { animation-duration: 0.001ms !important; }
-}
-
-/* --------------------------- Boot loader -------------------------- */
-.boot-loader {
-  position: fixed;
-  inset: 0;
-  display: grid;
-  place-content: center;
-  gap: 10px;
-  grid-auto-flow: column;
-  background: var(--cream);
-  z-index: 9999;
-}
-.boot-loader span {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--grad-warm);
-  animation: bob 0.9s var(--ease) infinite alternate;
-}
-.boot-loader span:nth-child(2) { animation-delay: 0.15s; }
-.boot-loader span:nth-child(3) { animation-delay: 0.3s; }
-@keyframes bob {
-  from { transform: translateY(6px) scale(0.9); opacity: 0.5; }
-  to { transform: translateY(-6px) scale(1); opacity: 1; }
-}
-
-/* --------------------------- Helpers ------------------------------ */
-.sr-only {
+.visually-hidden {
   position: absolute;
   width: 1px;
   height: 1px;
-  padding: 0;
   margin: -1px;
+  padding: 0;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   white-space: nowrap;
-  border: 0;
 }
 
-.grid {
-  display: grid;
-  gap: clamp(18px, 2.5vw, 28px);
+/* Sticky header clearance for in-page navigation. Without this the heading
+   a link just scrolled to ends up underneath the bar. */
+section[id] {
+  scroll-margin-top: calc(var(--header-h) + 1rem);
+}
+
+section[id]:focus {
+  outline: none;
+}
+
+/* ----------------------------------------------------------- layout */
+
+.shell {
+  width: min(100% - (var(--gutter) * 2), var(--container));
+  margin-inline: auto;
+}
+
+.section {
+  padding-block: var(--section-y);
+  position: relative;
+}
+
+.section--ink {
+  background: var(--ink);
+  color: var(--on-ink);
+}
+
+.section--ivory {
+  background: var(--ivory);
+  color: var(--on-ivory);
+}
+
+/* Edge-to-edge media, even inside a centred shell. */
+.bleed {
+  width: 100vw;
+  margin-inline-start: 50%;
+  transform: translateX(50%);
+}
+
+html[dir='ltr'] .bleed {
+  transform: translateX(-50%);
+}
+
+/* --------------------------------------------------------- typography */
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: var(--step--1);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  margin-bottom: 1rem;
+
+  &::before {
+    content: '';
+    width: 28px;
+    height: 2px;
+    background: currentcolor;
+    flex: none;
+  }
+}
+
+.display {
+  font-size: var(--step-4);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+}
+
+.lede {
+  font-size: var(--step-1);
+  color: var(--muted);
+  max-width: 46ch;
+  line-height: 1.7;
+}
+
+/* ------------------------------------------------------------ buttons */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: var(--tap);
+  padding: 0.9rem 1.6rem;
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  font-size: var(--step-0);
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition:
+    background-color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+.btn--primary {
+  background: var(--orange);
+  color: var(--ink);
+  border-color: var(--orange);
+
+  &:hover {
+    background: var(--orange-deep);
+    border-color: var(--orange-deep);
+  }
+}
+
+.btn--ghost-light {
+  color: var(--on-ink);
+  border-color: rgb(248 249 246 / 0.45);
+
+  &:hover {
+    border-color: var(--on-ink);
+    background: rgb(248 249 246 / 0.1);
+  }
+}
+
+.btn--ghost-dark {
+  color: var(--ink);
+  border-color: rgb(40 60 34 / 0.3);
+
+  &:hover {
+    border-color: var(--ink);
+    background: rgb(40 60 34 / 0.06);
+  }
+}
+
+.btn--block {
+  width: 100%;
+}
+
+/* ----------------------------------------------------------- reveal
+   Deliberately transform-only: nothing on this site is ever faded out.
+   If JS is off, if IntersectionObserver never fires, or if the page is
+   printed or captured full-height, every word and image is still there —
+   at worst sitting 18px lower than its final position.
+
+   The pre-reveal state is also gated behind `html.js-motion`, which is
+   only added once JS boots and reduced motion is off. */
+
+html.js-motion [data-reveal] {
+  transform: translateY(18px);
+  transition: transform var(--dur) var(--ease);
+}
+
+html.js-motion [data-reveal].is-in {
+  transform: none;
+}
+
+/* --------------------------------------------------------------- misc */
+
+::selection {
+  background: var(--orange);
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

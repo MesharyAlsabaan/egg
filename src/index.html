@@ -2,63 +2,127 @@
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="utf-8" />
-    <title>شركة بيض العائلة للتجارة | بيض طازج يصلك كل يوم</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
-    <!-- Primary SEO -->
-    <meta name="description" content="شركة بيض العائلة للتجارة — بيض سعودي طازج وفاخر من المزرعة يصلك كل يوم. بيض أبيض وبني وعضوي وفاخر يُنتج بأعلى معايير الجودة والشهادات." />
-    <meta name="keywords" content="بيض, بيض طازج, بيض سعودي, بيض العائلة, بيض أبيض, بيض بني, بيض عضوي, مورد بيض, توزيع بيض, بيض الرياض" />
-    <meta name="author" content="شركة بيض العائلة للتجارة" />
-    <meta name="theme-color" content="#E07B26" />
+    <!-- Arabic defaults for the first paint. SeoService rewrites the title,
+         description, Open Graph, canonical and hreflang for the active
+         language as soon as the route resolves. -->
+    <title>بيض العائلة للتجارة | إنتاج وتوريد بيض سعودي لتجار الجملة</title>
+    <meta
+      name="description"
+      content="شركة بيض العائلة للتجارة — مزرعة إنتاج بيض في مرات بمنطقة الرياض، بخط إنتاج مؤتمت بالكامل وطاقة تصل إلى 430,000 بيضة يومياً. توريد لتجار الجملة والموزعين والأسواق."
+    />
+    <link rel="canonical" href="https://familyeggs.sa/ar" />
+    <link rel="alternate" hreflang="ar" href="https://familyeggs.sa/ar" />
+    <link rel="alternate" hreflang="en" href="https://familyeggs.sa/en" />
+    <link rel="alternate" hreflang="x-default" href="https://familyeggs.sa/ar" />
+    <meta name="theme-color" content="#283C22" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="شركة بيض العائلة للتجارة | بيض طازج يصلك كل يوم" />
-    <meta property="og:description" content="بيض سعودي طازج وفاخر يصلك يومياً. جودة تثق بها وطزاجة تتذوّقها." />
+    <meta property="og:url" content="https://familyeggs.sa/ar" />
+    <meta property="og:site_name" content="بيض العائلة للتجارة" />
+    <meta property="og:title" content="بيض العائلة للتجارة | إنتاج وتوريد بيض سعودي لتجار الجملة" />
+    <meta
+      property="og:description"
+      content="خط إنتاج مؤتمت بالكامل، من الجمع اليومي إلى التعبئة، دون ملامسة بشرية."
+    />
+    <meta property="og:image" content="https://familyeggs.sa/media/farm-day-1200.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="670" />
+    <meta property="og:image:alt" content="لقطة جوية لمزرعة بيض العائلة في مرات: حظائر الإنتاج والصوامع وحقل الألواح الشمسية" />
     <meta property="og:locale" content="ar_SA" />
+    <meta property="og:locale:alternate" content="en_US" />
 
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="شركة بيض العائلة للتجارة" />
-    <meta name="twitter:description" content="بيض طازج يصلك كل يوم." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="بيض العائلة للتجارة" />
+    <meta
+      name="twitter:description"
+      content="توريد بيض سعودي لتجار الجملة والموزعين والأسواق."
+    />
+    <meta name="twitter:image" content="https://familyeggs.sa/media/farm-day-1200.jpg" />
 
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cellipse cx='16' cy='17' rx='10' ry='13' fill='%23F4B400'/%3E%3Cpath d='M6 17a10 13 0 0 1 20 0z' fill='%23E07B26'/%3E%3C/svg%3E" />
+    <link rel="icon" href="brand/favicon.png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="brand/icon-180.png" />
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&family=El+Messiri:wght@500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet" />
+    <!-- Madani Arabic, self-hosted. Body and display weights are preloaded so
+         the first screen renders in the brand face; 500 and 600 follow from
+         the stylesheet a moment later. -->
+    <link rel="preload" as="font" type="font/woff2" href="fonts/madani-arabic-400.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="fonts/madani-arabic-700.woff2" crossorigin />
 
-    <!-- Structured data -->
+    <!-- The hero poster is the LCP candidate. Two preloads, each behind its
+         own media query, so a phone never fetches the 1920px landscape frame
+         and a desktop never stretches the portrait one. -->
+    <link
+      rel="preload"
+      as="image"
+      media="(max-width: 767px)"
+      href="media/hero-poster-mobile-1080.avif"
+      imagesrcset="media/hero-poster-mobile-720.avif 720w, media/hero-poster-mobile-1080.avif 1080w"
+      imagesizes="100vw"
+      type="image/avif"
+      fetchpriority="high"
+    />
+    <link
+      rel="preload"
+      as="image"
+      media="(min-width: 768px)"
+      href="media/hero-poster-desktop-1600.avif"
+      imagesrcset="
+        media/hero-poster-desktop-1280.avif 1280w,
+        media/hero-poster-desktop-1600.avif 1600w,
+        media/hero-poster-desktop-1920.avif 1920w
+      "
+      imagesizes="100vw"
+      type="image/avif"
+      fetchpriority="high"
+    />
+
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "Organization",
-        "name": "Family Eggs For Trading Co.",
-        "alternateName": "شركة بيض العائلة للتجارة",
-        "url": "https://familyeggs.example",
-        "description": "Premium Saudi farm-fresh egg production and distribution.",
+        "@id": "https://familyeggs.sa/#organization",
+        "name": "شركة بيض العائلة للتجارة",
+        "alternateName": "Family Eggs For Trading Co.",
+        "url": "https://familyeggs.sa/ar",
+        "logo": "https://familyeggs.sa/brand/logo-lockup-720.png",
+        "image": "https://familyeggs.sa/media/farm-day-1200.jpg",
+        "email": "info@familyeggs.sa",
+        "telephone": "+966507488650",
+        "faxNumber": "+966114928138",
         "address": {
           "@type": "PostalAddress",
-          "addressCountry": "SA",
-          "addressRegion": "Riyadh",
-          "addressLocality": "Marat"
+          "streetAddress": "6621 طريق النهضة، الربوة",
+          "addressLocality": "الرياض",
+          "postalCode": "12823-2778",
+          "addressCountry": "SA"
+        },
+        "location": {
+          "@type": "Place",
+          "name": "مزرعة بيض العائلة — مرات",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "طريق لبخة المقتسم، ص.ب 12816",
+            "addressLocality": "مرات",
+            "addressRegion": "منطقة الرياض",
+            "addressCountry": "SA"
+          }
         },
         "contactPoint": {
           "@type": "ContactPoint",
-          "telephone": "+966-50-748-8650",
           "contactType": "sales",
-          "email": "AL-HOMODI@HOTMAIL.COM"
+          "telephone": "+966507488650",
+          "email": "info@familyeggs.sa",
+          "areaServed": "SA",
+          "availableLanguage": ["ar", "en"]
         }
       }
     </script>
   </head>
   <body>
-    <app-root>
-      <div class="boot-loader" aria-label="Loading">
-        <span></span><span></span><span></span>
-      </div>
-    </app-root>
+    <app-root></app-root>
   </body>
 </html>

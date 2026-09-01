@@ -1,66 +1,129 @@
-# Family Eggs For Trading Co. — Landing Page
+# شركة بيض العائلة للتجارة — الموقع
 
-A premium, fully responsive, bilingual (English / Arabic, RTL-ready) landing page
-for **Family Eggs For Trading Co. — شركة بيض العائلة للتجارة**, built with the latest
-**Angular** using standalone components and a clean, component-based architecture.
+موقع موجّه إلى **تجار البيض والموزعين وتجار الجملة والأسواق داخل السعودية**.
+عربي وإنجليزي بمسارين `/ar` و`/en`.
 
-## ✨ Highlights
+مبني بـ **Angular 20** standalone، بإشارات (signals) و`OnPush`، وبلا أي مكتبة
+حركة خارجية.
 
-- **Brand-accurate palette** extracted directly from the company logo & carton:
-  - Family Eggs Orange `#E07B26` (primary) · Yolk Gold `#F4B400` · Fresh Green `#4CAF50`
-- **Real farm imagery** — hero uses the golden egg-candling shot; gallery shows the
-  actual farms, grading halls, conveyor lines and solar facilities.
-- **Bilingual EN/AR** with instant language toggle and full RTL/LTR layout mirroring.
-- **Standalone components**, `OnPush` change detection, signals, and a lazy-loaded page.
-- **Custom directives**: scroll-reveal (`appReveal`) and animated counters (`appCountUp`).
-- **Accessible**: skip link, focus rings, ARIA labels, reduced-motion support, semantic HTML.
-- **SEO-ready**: meta + Open Graph + Twitter tags and JSON-LD Organization schema.
+---
 
-## 🧱 Sections
-
-Hero · About · Products · Why Choose Us · Production Process · Statistics ·
-Testimonials (carousel) · Partners & Certifications · Gallery (lightbox) · Contact · Footer
-
-## 🚀 Getting started
+## التشغيل
 
 ```bash
 npm install
-npm start        # dev server → http://localhost:4200
-npm run build    # production build → dist/family-eggs-landing
+npm start        # خادم تطوير → http://localhost:4200
+npm run build    # بناء إنتاجي → dist/family-eggs-landing
 ```
 
-> Requires Node 20+.
+### إعادة توليد الوسائط
 
-## 📁 Structure
+الأصول الأصلية (فيديو المزرعة، الصور الجوية، ملفات الشعار) تعيش **خارج** هذا
+المجلد، في `../videos` و`../BARNDING`. لا شيء منها يدخل الـbuild مباشرة؛ يمرّ
+كله على الأنبوب:
 
-```
-src/
-  index.html              # SEO meta, fonts, JSON-LD, boot loader
-  styles.scss             # global design system & brand tokens
-  app/
-    app.config.ts         # router + zone config
-    app.routes.ts         # lazy-loaded landing route
-    app.component.ts      # root shell
-    core/i18n/            # i18n service + EN/AR translations
-    shared/
-      components/          # Logo, SectionHeading
-      directives/          # RevealDirective, CountUpDirective
-    landing/              # page composition + back-to-top
-    sections/             # one standalone component per section
-public/assets/
-  images/                 # optimized farm & product photography
-  brand/                  # logo assets
+```bash
+python tools/build-media.py            # كل شيء
+python tools/build-media.py video      # المقاطع والـposters فقط
+python tools/build-media.py images     # الصور فقط
+python tools/build-media.py brand      # الشعارات والأيقونات فقط
 ```
 
-## 🌍 Internationalization
+يتطلب `ffmpeg` على المسار و`Pillow >= 11` (لدعم AVIF). المخرجات تذهب إلى
+`public/media` و`public/brand`، ويولّد الأنبوب أيضاً
+`src/app/core/media-manifest.ts` الذي يخبر مكوّن الصور بالعروض المتاحة فعلياً
+لكل صورة — فلا يمكن أن يطلب المكوّن ملفاً غير موجود.
 
-All copy lives in `src/app/core/i18n/translations.ts` as a strongly-typed EN/AR
-dictionary. `I18nService` exposes signals (`t`, `lang`, `dir`, `isRtl`) and keeps
-`<html lang dir>` in sync; the choice is persisted to `localStorage`.
+**عند وصول فيديو محدَّث**: ضعه في `../videos` وشغّل `build-media.py video`.
+الأنبوب يختار أكبر ملف `.mp4` في المجلد، فلا حاجة لتعديل الكود.
 
-## 📝 Notes
+### إعادة توليد الخطوط
 
-- Frontend only — the contact form is UI-only and shows a success state without a backend.
-- The map uses an OpenStreetMap embed placeholder; swap for Google Maps if preferred.
-- Brown / organic product imagery reuses the white-egg photography with subtle CSS
-  filtering as a placeholder until dedicated shots are available.
+```bash
+pip install "fonttools[woff]"
+python tools/build-fonts.py            # Madani Arabic -> public/fonts/*.woff2
+```
+
+### إعادة إنتاج فيديو الـHero
+
+```bash
+python tools/build-hero.py             # الديسكتوب والجوال والأتمتة
+python tools/build-hero.py stills      # لوحة تدريج قبل/بعد قبل الترميز
+python tools/build-hero.py framing     # لوحة تأطير 9:16 مع منطقة النص
+```
+
+المصادر `../videos/{6,11,12,13}.mp4`. الملف يحمل قائمة القص والتدريج لكل لقطة
+وقيم إعادة التأطير الرأسي؛ راجع لوحتَي `stills` و`framing` قبل أي ترميز كامل.
+
+الأصول المرخّصة في `../BARNDING/FONTS/Fonts`. تُبنى أربعة أوزان
+(400/500/600/700) لأنها وحدها المستخدمة في التصميم.
+
+---
+
+## البنية
+
+```
+src/app/
+  core/
+    content.ts            كل نص ورقم وعنوان في الموقع — المصدر الوحيد
+    media-manifest.ts     مولّد آلياً — لا يُحرَّر يدوياً
+    motion.service.ts     القرار الوحيد بشأن الحركة والتشغيل التلقائي
+    supply-line.service.ts  تقدّم خط التوريد (مستمع واحد لكل الصفحة)
+    whatsapp.service.ts   بناء روابط wa.me
+  shared/
+    media-image.component.ts   <picture> بـ AVIF/WebP/JPG وأبعاد ثابتة
+    brand-logo.component.ts    شعار الهوية (لا يُعاد رسمه أبداً)
+    supply-rail.component.ts   عقدة ومسار الخط البرتقالي
+    reveal.directive.ts        ظهور بالإزاحة فقط — لا يخفي شيئاً
+    in-view-video.directive.ts تحميل وتشغيل المقاطع عند الظهور فقط
+  core/i18n/
+    dictionary.ts         كل نص بالعربية والإنجليزية — المصدر الوحيد
+    i18n.service.ts       اللغة الحالية، الحفظ، ضبط lang/dir على <html>
+  sections/
+    header · hero · figures · automation · products · heritage · facility ·
+    contact · footer
+```
+
+### ترتيب الصفحة
+
+`header` الزر الوحيد · `hero` من نحن ولمن · `figures` كل الأرقام مرة واحدة ·
+`automation` خط الإنتاج ولحظة الحركة الوحيدة · `products` المقاسات والعبوات مرة
+واحدة · `heritage` الخبرة مرة واحدة · `facility` الصور الجوية · `contact` بيانات
+مباشرة بلا زر · `footer`.
+
+### قواعد ثابتة في هذا المشروع
+
+1. **لا معلومة بلا مصدر.** كل رقم أو عنوان أو مواصفة في `dictionary.ts` مأخوذ من
+   ملف الهوية أو من العبوة أو من تأكيد مكتوب من المالك. لا شهادات ولا أرقام
+   تقديرية. راجع `docs/DELIVERY-REPORT.md`.
+2. **لا شيء مخفي افتراضياً.** الظهور عند التمرير حركة إزاحة فقط، بلا `opacity`.
+   لو تعطّلت JavaScript أو `IntersectionObserver` يبقى كل المحتوى ظاهراً.
+3. **الشعار أصل، لا رسمة.** يُستخدم من `public/brand` فقط. على الخلفية الداكنة
+   تُستخدم الأيقونة الأساسية لأن التراكوتا على الأخضر تباينها 2.2:1.
+4. **الجوال أولاً.** التصميم يبدأ عند 390px. أهداف اللمس ≥ 44px والحقول ≥ 16px.
+5. **زر «اطلب عرض سعر» يظهر مرة واحدة**، في الهيدر. لا تضِف نسخة ثانية منه
+   في أي قسم؛ قسم التواصل يعرض القنوات مباشرة بدلاً عن ذلك.
+6. **كل حقيقة لها مكان واحد.** إن وجدت نفسك تكتب الرقم نفسه في قسمين، فتقسيم
+   الأقسام خاطئ — أصلحه بدل تكرار الرقم.
+6. **الفيديو من `tools/build-hero.py` فقط.** لا تحرّر الملفات في `public/media`
+   يدوياً؛ عدّل قائمة اللقطات وأعد التشغيل. كل قيمة تدريج فيها مبنية على قياس
+   موثّق في رأس الملف.
+7. **واصفات `font-weight` في `@font-face` إلزامية.** ملفات Madani الستة تعلن
+   جميعها `usWeightClass 400` تحت عائلات منفصلة؛ تلك الواصفات هي ما يمنح
+   المتصفح محور أوزان صحيحاً.
+
+---
+
+### النشر
+
+المخرجات **صفحات ثابتة لكل مسار** (`/ar/index.html` و`/en/index.html`)، فلا يجوز
+استخدام SPA fallback: `serve -s` يسلّم `/ar` صفحة إعادة التوجيه الجذرية فتنشأ حلقة
+لا نهائية. استخدم `npm run serve:prod` أو أي خادم ملفات عادي.
+
+---
+
+## الحالة والمعلّقات
+
+مقاييس Lighthouse ونتائج الفحص في `docs/lighthouse.md`.
+البنود المعلّقة على العميل (الفيديو المحدَّث، روابط السوشال، الختمان على
+الكرتون، مناطق التغطية) في `docs/DELIVERY-REPORT.md`.
