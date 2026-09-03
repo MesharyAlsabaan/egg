@@ -157,7 +157,7 @@ import { RevealDirective } from '../shared/reveal.directive';
     .packs__unit {
       font-size: var(--step-2);
       font-weight: 700;
-      letter-spacing: -0.01em;
+      letter-spacing: var(--track-heading);
     }
 
     .specs {

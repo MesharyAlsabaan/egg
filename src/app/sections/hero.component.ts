@@ -187,8 +187,8 @@ import { MotionService } from '../core/motion.service';
       /* 38px to 58px on phones, as specified, then larger from tablet up. */
       font-size: clamp(2.375rem, 9vw, 3.625rem);
       font-weight: 700;
-      line-height: 1.08;
-      letter-spacing: -0.025em;
+      line-height: var(--lh-hero);
+      letter-spacing: var(--track-display);
       color: var(--ivory);
       max-width: 16ch;
       margin-block-end: 1.1rem;

@@ -77,8 +77,8 @@ import { RevealDirective } from '../shared/reveal.directive';
       gap: 0.4rem;
       font-size: clamp(2.5rem, 11vw, 4.5rem);
       font-weight: 700;
-      line-height: 0.95;
-      letter-spacing: -0.035em;
+      line-height: var(--lh-figure);
+      letter-spacing: var(--track-figure);
       color: var(--orange);
       font-variant-numeric: tabular-nums;
     }

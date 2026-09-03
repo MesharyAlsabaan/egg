@@ -103,10 +103,35 @@
   --radius: 4px;
   --radius-lg: 10px;
 
+  /* ---- Typography tracking ----
+     Latin display type tightens well; Arabic does not. It is a cursive script
+     whose letters carry dots above and below, so negative tracking pulls those
+     dots into the neighbouring glyph and a tight leading drops the dots of one
+     line onto the line beneath. These are overridden for RTL below. */
+  --track-display: -0.02em;
+  --track-heading: -0.01em;
+  --track-figure: -0.035em;
+  --lh-display: 1.02;
+  --lh-heading: 1.12;
+  --lh-hero: 1.08;
+  --lh-figure: 0.95;
+
   /* ---- Motion ---- */
   --dur: 620ms;
   --dur-fast: 260ms;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Arabic keeps its natural tracking and needs more room between lines: at
+   1.02 the dots under ب and ي land on the line below. */
+html[dir='rtl'] {
+  --track-display: normal;
+  --track-heading: normal;
+  --track-figure: normal;
+  --lh-display: 1.3;
+  --lh-heading: 1.35;
+  --lh-hero: 1.32;
+  --lh-figure: 1.1;
 }
 
 /* ---------------------------------------------------------------- reset */
@@ -149,8 +174,8 @@ h2,
 h3,
 h4 {
   font-weight: 600;
-  line-height: 1.12;
-  letter-spacing: -0.01em;
+  line-height: var(--lh-heading);
+  letter-spacing: var(--track-heading);
   text-wrap: balance;
 }
 
@@ -288,8 +313,8 @@ html[dir='ltr'] .bleed {
 .display {
   font-size: var(--step-4);
   font-weight: 700;
-  line-height: 1.02;
-  letter-spacing: -0.02em;
+  line-height: var(--lh-display);
+  letter-spacing: var(--track-display);
 }
 
 .lede {
