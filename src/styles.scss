@@ -106,25 +106,18 @@
   /* ---- Typography tracking ----
      Latin display type tightens well; Arabic does not. It is a cursive script
      whose letters carry dots above and below, so negative tracking pulls those
-     dots into the neighbouring glyph and a tight leading drops the dots of one
-     line onto the line beneath. These are overridden for RTL below. */
-  --track-display: -0.02em;
-  --track-heading: -0.01em;
-  --track-figure: -0.035em;
-  --lh-display: 1.02;
-  --lh-heading: 1.12;
-  --lh-hero: 1.08;
-  --lh-figure: 0.95;
+     dots into the neighbouring glyph — at -0.02em the two dots under the ي of
+     "للتوريد" merge into the tail of the ر before it — and a tight leading
+     drops the dots of one line onto the line beneath.
 
-  /* ---- Motion ---- */
-  --dur: 620ms;
-  --dur-fast: 260ms;
-  --ease: cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-/* Arabic keeps its natural tracking and needs more room between lines: at
-   1.02 the dots under ب and ي land on the line below. */
-html[dir='rtl'] {
+     The safe values are therefore the DEFAULT and the tightening is scoped to
+     [dir='ltr'] below, never the other way round. The build inlines critical
+     CSS ahead of the deferred stylesheet, and beasties inlines this :root
+     block but not the direction-scoped one; with the tightening as the default
+     every Arabic page rendered its headings squeezed until the full sheet
+     landed — long enough to see, and to photograph, on a phone connection.
+     Inverted like this the worst case is English paints briefly untightened,
+     which costs nothing and collides with nothing. */
   --track-display: normal;
   --track-heading: normal;
   --track-figure: normal;
@@ -132,6 +125,23 @@ html[dir='rtl'] {
   --lh-heading: 1.35;
   --lh-hero: 1.32;
   --lh-figure: 1.1;
+
+  /* ---- Motion ---- */
+  --dur: 620ms;
+  --dur-fast: 260ms;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Latin only. Arabic keeps the natural tracking set above and the taller
+   leading: at 1.02 the dots under ب and ي land on the line below. */
+html[dir='ltr'] {
+  --track-display: -0.02em;
+  --track-heading: -0.01em;
+  --track-figure: -0.035em;
+  --lh-display: 1.02;
+  --lh-heading: 1.12;
+  --lh-hero: 1.08;
+  --lh-figure: 0.95;
 }
 
 /* ---------------------------------------------------------------- reset */
