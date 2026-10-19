@@ -89,6 +89,19 @@ export function inquiryConfig() {
 // ------------------------------------------------------------ rate limit
 const hits = new Map(); // ip → [timestamps]
 let all = []; // timestamps, every client
+
+/**
+ * Forget an IP once its window has passed. The privacy notice says the
+ * address is held "for about ten minutes" — this sweep is what makes that
+ * true (window + at most one sweep interval). Nothing here is ever logged.
+ */
+function sweep(now = Date.now()) {
+  for (const [key, list] of hits) {
+    if (!list.some((t) => now - t < RATE.windowMs)) hits.delete(key);
+  }
+}
+setInterval(sweep, 60 * 1000).unref();
+
 function limited(ip) {
   const now = Date.now();
   all = all.filter((t) => now - t < GLOBAL.windowMs);
@@ -97,9 +110,7 @@ function limited(ip) {
   const recent = (hits.get(ip) ?? []).filter((t) => now - t < RATE.windowMs);
   recent.push(now);
   hits.set(ip, recent);
-  if (hits.size > 5000) {
-    for (const [key, list] of hits) if (!list.some((t) => now - t < RATE.windowMs)) hits.delete(key);
-  }
+  if (hits.size > 5000) sweep(now);
   return recent.length > RATE.max;
 }
 

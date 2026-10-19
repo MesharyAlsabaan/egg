@@ -19,7 +19,7 @@ import { fileURLToPath } from 'node:url';
 const SERVER = fileURLToPath(new URL('./server.mjs', import.meta.url));
 
 // ------------------------------------------------------------- SMTP sink
-function smtpSink() {
+function smtpSink({ reject = false } = {}) {
   const messages = [];
   const server = createTcp((socket) => {
     let data = false;
@@ -45,6 +45,7 @@ function smtpSink() {
         }
         const cmd = line.slice(0, 4).toUpperCase();
         if (cmd === 'EHLO' || cmd === 'HELO') socket.write('250-sink\r\n250 8BITMIME\r\n');
+        else if (cmd === 'MAIL' && reject) socket.write('550 5.7.1 Sender rejected\r\n');
         else if (cmd === 'MAIL') (current.from = line), socket.write('250 OK\r\n');
         else if (cmd === 'RCPT') current.to.push(line), socket.write('250 OK\r\n');
         else if (cmd === 'DATA') (data = true), socket.write('354 go\r\n');
@@ -362,6 +363,36 @@ describe('inquiry API when the mail server is unreachable', () => {
     const r = await post(ctx, valid());
     assert.equal(r.status, 502);
     assert.deepEqual(await r.json(), { ok: false, error: 'send' });
+  });
+});
+
+// ------------------------------------- inquiry: mail server refuses it
+describe('inquiry API when the mail server rejects the message', () => {
+  let ctx;
+  let sink;
+  before(async () => {
+    sink = await smtpSink({ reject: true });
+    const port = await freePort();
+    ctx = await start({
+      PORT: String(port),
+      SMTP_HOST: '127.0.0.1',
+      SMTP_PORT: String(sink.port),
+      SMTP_SECURE: 'false',
+      SMTP_IGNORE_TLS: 'true',
+      SMTP_FROM: 'website@familyeggs.sa',
+      ALLOWED_ORIGINS: `http://127.0.0.1:${port}`,
+    });
+  });
+  after(() => {
+    ctx.child.kill();
+    sink.server.close();
+  });
+
+  test('returns 502, not a false success', async () => {
+    const r = await post(ctx, valid());
+    assert.equal(r.status, 502);
+    assert.deepEqual(await r.json(), { ok: false, error: 'send' });
+    assert.equal(sink.messages.length, 0);
   });
 });
 
