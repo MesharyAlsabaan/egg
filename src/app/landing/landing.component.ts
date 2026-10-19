@@ -1,5 +1,7 @@
-import { DOCUMENT } from '@angular/common';
-import { ChangeDetectionStrategy, Component, afterNextRender, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router, Scroll } from '@angular/router';
+import { filter, take } from 'rxjs';
 
 import { I18nService } from '../core/i18n/i18n.service';
 import { setupPage } from '../core/page';
@@ -74,14 +76,21 @@ export class LandingComponent {
     setupPage('home');
 
     // Arriving at `/ar#products` (from an inner page's nav, or a shared link):
-    // the router's scroll-to-top runs after the browser's own jump to the
-    // fragment and undoes it. The router schedules that in a timeout, so a
-    // timeout queued after the first render runs after it and wins.
-    const doc = inject(DOCUMENT);
+    // with anchor scrolling off, the router answers its own Scroll event by
+    // scrolling to the top, undoing the browser's jump to the fragment. That
+    // event carries the fragment. `Router.events` re-emits the internal
+    // stream, so this subscriber runs BEFORE the router's own scroll handler
+    // within the same synchronous emission; a microtask puts our scroll after
+    // it, every time — no timers to race.
     const scroller = inject(ScrollToService);
-    afterNextRender(() => {
-      const id = decodeURIComponent(doc.defaultView?.location.hash.slice(1) ?? '');
-      if (id) setTimeout(() => scroller.go(id), 0);
-    });
+    inject(Router)
+      .events.pipe(
+        filter((e): e is Scroll => e instanceof Scroll && !!e.anchor),
+        take(1),
+        takeUntilDestroyed(),
+      )
+      .subscribe((e) =>
+        queueMicrotask(() => scroller.go(decodeURIComponent(e.anchor!), { instant: true })),
+      );
   }
 }
