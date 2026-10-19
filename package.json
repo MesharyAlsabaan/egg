@@ -8,7 +8,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "serve:prod": "serve dist/family-eggs-landing/browser -l ${PORT:-8080}",
-    "prerender": "ng build"
+    "prerender": "ng build",
+    "check:seo": "node tools/check-seo.mjs"
   },
   "engines": {
     "node": ">=22 <23"
