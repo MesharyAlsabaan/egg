@@ -1,7 +1,16 @@
 # شركة بيض العائلة للتجارة — الموقع
 
-موقع موجّه إلى **تجار البيض والموزعين وتجار الجملة والأسواق داخل السعودية**.
-عربي وإنجليزي بمسارين `/ar` و`/en`.
+موقع موجّه إلى **تجار البيض والموزعين وتجار الجملة والأسواق داخل السعودية**،
+ومعه صفحة للمشترين من خارج المملكة. عربي وإنجليزي، والصفحات:
+
+| المسار | الصفحة |
+|---|---|
+| `/ar` · `/en` | الرئيسية |
+| `/ar/wholesale` · `/en/wholesale` | التوريد بالجملة داخل المملكة + نموذج طلب |
+| `/ar/international` · `/en/international` | المستوردون والمشترون الدوليون + نموذج طلب |
+
+خطة النمو والتدقيق التقني وكل ما يحتاج قرار المالك في `docs/seo-growth/`
+(ابدأ بـ`01-EXECUTIVE-SUMMARY.md`).
 
 مبني بـ **Angular 20** standalone، بإشارات (signals) و`OnPush`، وبلا أي مكتبة
 حركة خارجية.
@@ -14,7 +23,22 @@
 npm install
 npm start        # خادم تطوير → http://localhost:4200
 npm run build    # بناء إنتاجي → dist/family-eggs-landing
+npm run check:seo  # فحص الـSEO للبناء: canonical وhreflang والعناوين وJSON-LD والروابط
 ```
+
+**قبل كل نشر:** `npm run build && npm run check:seo` — يفشل الفحص إن اختلفت أي صفحة
+عن `public/sitemap.xml`.
+
+### إضافة صفحة جديدة
+
+`core/pages.ts` ← `app.routes.ts` ← `pageMeta` ونصوصها في `dictionary.ts` ←
+`public/sitemap.xml`. ثم `check:seo`.
+
+### التحليلات
+
+`core/analytics.service.ts` يرسل الأحداث إلى `dataLayer` دائماً، ولا يحمّل Google
+Analytics إلا إذا وُضع `GA4_MEASUREMENT_ID`. لا تُرسل أي بيانات يكتبها الزائر.
+التفاصيل في `docs/seo-growth/13-ANALYTICS-AND-SEARCH-CONSOLE.md`.
 
 ### إعادة توليد الوسائط
 
@@ -119,6 +143,21 @@ src/app/
 المخرجات **صفحات ثابتة لكل مسار** (`/ar/index.html` و`/en/index.html`)، فلا يجوز
 استخدام SPA fallback: `serve -s` يسلّم `/ar` صفحة إعادة التوجيه الجذرية فتنشأ حلقة
 لا نهائية. استخدم `npm run serve:prod` أو أي خادم ملفات عادي.
+
+**خادم الإنتاج** هو `server/server.mjs` (`npm run serve:prod`): يخدم الملفات
+الثابتة بالقواعد نفسها — تحويل 301 من `/` إلى `/ar` ومن الشرطة الأخيرة، وسياسة
+التخزين المؤقت (`immutable` للملفات ذات البصمة)، ونوع `image/avif` الصحيح،
+ورؤوس الأمان، ونطاقات البايت للفيديو — ويستقبل نماذج الطلب على `POST /api/inquiry`.
+
+إرسال النماذج بالبريد **معطّل** حتى تُضبط متغيرات البيئة `SMTP_*`
+(وTurnstile اختيارياً)؛ وحتى ذلك الحين يحوّل النموذج الطلب إلى واتساب أو بريد
+الزائر ويقول صراحة إنه لم يُرسَل بعد. التفاصيل والقائمة الكاملة للمتغيرات في
+`docs/seo-growth/16-RELEASE-CHECKLIST.md`.
+
+```bash
+npm run test:server   # اختبارات الخادم والنموذج (بعد npm run build)
+npm run serve:static  # الطريقة القديمة عبر serve و public/serve.json — للتراجع فقط
+```
 
 ---
 
