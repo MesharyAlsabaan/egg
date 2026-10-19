@@ -12,7 +12,14 @@ Branch: **`release/seo-growth`** (local; based on `master` at `9a3e82e`, which e
 | 4 | `f2661ea` feat: add wholesale, international and privacy pages with per-page SEO | 21 files in `src/`, `public/sitemap.xml` |
 | 5 | `a0e6a86` test(seo): add a build-output SEO check | `tools/check-seo.mjs`, `package.json` |
 | 6 | `fdfa120` feat(server): production server with enquiry delivery | `server/*`, `railway.json`, `package.json`, `package-lock.json` |
-| 7 | docs: SEO growth programme, release checklist and rollback | `README.md`, `docs/seo-growth/*` |
+| 7 | `5e4d50c` docs: SEO growth programme, release checklist and rollback | `README.md`, `docs/seo-growth/*` |
+| 8 | `f2f45eb` fix(home): land on #fragment links reliably | `landing.component.ts`, `scroll-to.service.ts` |
+| 9 | `7d4bdff` fix(form): fall back to hand-off when Turnstile cannot load; add a timeout | `inquiry-form.component.ts` |
+| 10 | `6fbc693` fix(server): forget rate-limit IPs after the window; test rejected mail | `server/inquiry.mjs`, `server/server.test.mjs` |
+| 11 | `a27e260` fix(privacy): describe only what the site does | `dictionary.ts` |
+| 12 | docs: final technical readiness report | `docs/seo-growth/*` |
+
+Commits 8–12 come from the final technical round; see [17](17-FINAL-TECHNICAL-READINESS.md).
 
 Each commit was exported from git and built in isolation; results are in [12](12-QA-TEST-RESULTS.md) §9. Every commit is LF. The 25 files in the Drive working tree that differ from `master` only in CRLF line endings are not in any commit.
 

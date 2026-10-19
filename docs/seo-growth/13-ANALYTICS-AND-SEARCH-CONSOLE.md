@@ -49,7 +49,7 @@ Tested in Chrome ([12](12-QA-TEST-RESULTS.md)): correct event names and paramete
 
 - Saudi Arabia's Personal Data Protection Law (PDPL) is in force. GA4 sets cookies and processes online identifiers.
 - The current defaults (analytics granted, ads denied, no banner) are a common pragmatic setup, **not legal advice**. If legal review requires opt-in, add a consent banner and change the `analytics_storage` default to `denied`.
-- A **privacy notice** now exists at `/ar/privacy` and `/en/privacy` (noindex, linked from the footer and every form). It describes only what the site actually does. Two policy statements (data rights under the PDPL; retention "only as long as needed") need owner or legal confirmation before launch.
+- A **privacy notice** now exists at `/ar/privacy` and `/en/privacy` (noindex, linked from the footer and every form). It describes only what the site actually does (verified line by line in [17](17-FINAL-TECHNICAL-READINESS.md) §4) and makes no legal assurances. Rights, retention and lawful-basis wording are left for owner / legal review.
 - The inquiry form stores nothing on the site, and analytics never receive form contents.
 
 ## 5. Baseline and measurement plan

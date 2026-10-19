@@ -54,7 +54,7 @@ Every statement added on the new pages was checked against the fact register (§
 | The four buyer segments, as "who we take enquiries from" | `/wholesale` |
 | The three ordering steps and the delivery FAQ answer | `/wholesale` |
 | The export note and "we review each enquiry individually" | `/international` |
-| **The privacy notice**: factual description of the site, plus two policy statements (data rights under the PDPL; "kept only as long as needed…") that need owner / legal confirmation | `/{ar,en}/privacy` |
+| **The privacy notice** is now strictly factual: every line was checked against the code ([17](17-FINAL-TECHNICAL-READINESS.md) §4). The earlier draft's PDPL-rights line, retention line and "used only to…" were **removed**, so nothing is asserted on the company's behalf. Whether to add rights, retention and lawful-basis wording is an owner / legal decision | `/{ar,en}/privacy` |
 
 ## 4. Tone
 

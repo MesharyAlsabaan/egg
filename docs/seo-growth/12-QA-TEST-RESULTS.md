@@ -84,6 +84,8 @@ Categories that do not depend on CPU (session 2, all 8 pages, mobile and desktop
 
 Re-measure on an idle machine, or with PageSpeed Insights once the release is live, for publishable absolute numbers.
 
+**Session 3 (final round):** the interleaved A/B was repeated: `/ar` 51 vs 50, `/en` 53 vs 54, LCP within 0.02 s, so again no regression. Accessibility and best practices 100 on all 16 page/device runs. The same ~20 s TBT appeared on the untouched original build too, which confirms a measurement-environment artefact. Final-round results are in [17](17-FINAL-TECHNICAL-READINESS.md) §3.
+
 ## 7. Live hosting checks (production, read-only)
 
 | Check | Result |
