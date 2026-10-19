@@ -48,6 +48,8 @@ interface TurnstileApi {
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const PHONE = /^\+?[\d\s()-]{7,20}$/;
 const TURNSTILE_SRC = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+/** Longer than the server's own SMTP timeouts, so the server answers first. */
+const SUBMIT_TIMEOUT_MS = 45000;
 
 /**
  * The commercial enquiry form.
@@ -249,7 +251,19 @@ const TURNSTILE_SRC = 'https://challenges.cloudflare.com/turnstile/v0/api.js?ren
       } @else if (turnstileKey()) {
         <div class="inq__captcha" #captcha></div>
         @if (errors().captcha) {
-          <p class="inq__error" role="alert">{{ errors().captcha }}</p>
+          <div role="alert">
+            <p class="inq__error">{{ errors().captcha }}</p>
+            <p class="inq__alt inq__alt--plain">
+              {{ f().failure.alternatives }}
+              <button type="button" class="inq__link" (click)="handoff('whatsapp')">
+                {{ f().channels.whatsapp }}
+              </button>
+              ·
+              <button type="button" class="inq__link" (click)="handoff('email')">
+                {{ f().channels.email }}
+              </button>
+            </p>
+          </div>
         }
       }
 
@@ -394,6 +408,15 @@ const TURNSTILE_SRC = 'https://challenges.cloudflare.com/turnstile/v0/api.js?ren
 
     .inq__failed-title {
       font-weight: 700;
+    }
+
+    .inq__alt--plain {
+      font-size: var(--step--1);
+      color: var(--on-ivory-dim);
+    }
+
+    .inq__alt--plain .inq__link {
+      color: var(--olive-deep);
     }
 
     .inq__link {
@@ -622,7 +645,14 @@ export class InquiryFormComponent implements OnDestroy {
       }).catch(() => undefined);
     }
     const api = this.turnstile();
-    if (!api) return; // The server will reject without a token; the failure state offers hand-off.
+    if (!api) {
+      // Blocked by an extension, a firewall or the network. Without the
+      // check the server will refuse the enquiry, so offer the hand-off
+      // instead of a security check that can never be completed.
+      this.mode.set('handoff');
+      this.turnstileKey.set(null);
+      return;
+    }
     this.widgetId = api.render(el, {
       sitekey: key,
       language: this.i18n.lang(),
@@ -676,6 +706,7 @@ export class InquiryFormComponent implements OnDestroy {
           source: this.source(),
           token: this.token,
         }),
+        signal: AbortSignal.timeout(SUBMIT_TIMEOUT_MS),
       });
       const body = await response.json().catch(() => ({}));
       if (response.ok && body?.ok === true) {
