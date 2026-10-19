@@ -533,8 +533,7 @@ const AR: Dictionary = {
       captcha: 'أكمل التحقق الأمني قبل الإرسال.',
     },
     privacy: {
-      server:
-        'تُرسل بياناتك بالبريد الإلكتروني إلى بيض العائلة للرد على طلبك فقط، ولا يحفظها الموقع.',
+      server: 'تُرسل بياناتك بالبريد الإلكتروني إلى بيض العائلة (info@familyeggs.sa) للرد على طلبك، ولا يحفظها الموقع.',
       handoff:
         'لا يحفظ الموقع بياناتك. تُفتح الرسالة في تطبيق واتساب أو البريد لديك، ولا تصلنا إلا بعد أن تضغط «إرسال» هناك.',
       link: 'إشعار الخصوصية',
@@ -577,15 +576,16 @@ const AR: Dictionary = {
       {
         title: 'نماذج الطلب',
         body: [
-          'عند إرسال طلب تصلنا البيانات التي تكتبها: الاسم والشركة والدولة والبريد الإلكتروني أو الهاتف ونوع النشاط وتفاصيل احتياجك. نستخدمها للرد على طلبك ولمتابعة أي توريد ينتج عنه فقط.',
-          'إذا أرسل النموذج طلبك مباشرة، فإنه يصل بالبريد الإلكتروني إلى info@familyeggs.sa، ولا يحتفظ الموقع نفسه بأي نسخة منه.',
+          'عند إرسال طلب تصل إلى بيض العائلة البيانات التي تكتبها: الاسم والشركة والدولة والبريد الإلكتروني أو الهاتف ونوع النشاط وتفاصيل احتياجك، ليتسنّى الرد على طلبك.',
+          'إذا أرسل النموذج طلبك مباشرة، فإنه يصل بالبريد الإلكتروني إلى info@familyeggs.sa، ولا يحفظ الموقع نسخة منه. لا تسجّل سجلات الخادم إلا ما إذا أُرسل الطلب، مع نوع النشاط والصفحة واللغة، دون أي من محتواه.',
           'إذا اخترت واتساب أو البريد الإلكتروني بدلاً من ذلك، تُرسل الرسالة من تطبيقك أنت، وفق شروط تلك الخدمة.',
         ],
       },
       {
         title: 'الحماية من الرسائل المزعجة',
         body: [
-          'قد يستخدم النموذج خدمة Cloudflare Turnstile لمنع الإرسال الآلي، وهي تتحقق من المتصفح دون طلب بيانات شخصية. وقد يستخدم الخادم عنوان IP مؤقتاً للحد من تكرار الإرسال.',
+          'عند تفعيل خدمة Cloudflare Turnstile يُحمَّل النموذج منها للتحقق من أن المرسل شخص لا برنامج آلي، وتتلقى Cloudflare لهذا الغرض عنوان IP ومعلومات المتصفح.',
+          'ويحتفظ خادمنا بعنوان IP في الذاكرة نحو عشر دقائق فقط للحد من تكرار الإرسال، ولا يكتبه في أي سجل.',
         ],
       },
       {
@@ -595,20 +595,14 @@ const AR: Dictionary = {
         ],
       },
       {
-        title: 'حقوقك',
-        body: [
-          'يمكنك أن تسألنا عن البيانات التي لدينا من طلبك، أو أن تطلب تصحيحها أو حذفها، بمراسلة info@familyeggs.sa، وفق نظام حماية البيانات الشخصية في المملكة العربية السعودية.',
-        ],
-      },
-      {
-        title: 'مدة الاحتفاظ',
-        body: ['نحتفظ برسائل الطلبات المدة اللازمة للرد عليها ولإدارة أي علاقة تجارية تنتج عنها فقط.'],
+        title: 'التواصل بشأن بياناتك',
+        body: ['للاستفسار عن هذا الإشعار أو عن البيانات التي أرسلتها إلينا: info@familyeggs.sa.'],
       },
     ],
     analytics: {
       title: 'التحليلات',
       on: 'نستخدم Google Analytics لفهم طريقة استخدام الموقع، مثل الصفحات التي تُزار ووقت إرسال الطلبات. لا يُرسل محتوى النموذج إلى Google Analytics أبداً، وميزات الإعلانات معطّلة.',
-      off: 'لا يستخدم هذا الموقع ملفات تعريف ارتباط للتحليلات أو الإعلانات.',
+      off: 'لا يستخدم هذا الموقع ملفات تعريف ارتباط للتحليلات أو الإعلانات. والشيء الوحيد الذي يحفظه في متصفحك هو آخر لغة اخترتها (في التخزين المحلي)، ولا يُرسل إلى أي جهة.',
     },
     updated: 'آخر تحديث: 19 أكتوبر 2026',
   },
@@ -897,7 +891,7 @@ const EN: Dictionary = {
     },
     privacy: {
       server:
-        'Your details are emailed to Family Eggs only so we can reply to your enquiry. The website does not store them.',
+        'Your details are emailed to Family Eggs (info@familyeggs.sa) for a reply to your enquiry. The website does not store them.',
       handoff:
         'The website stores none of your details. The message opens in your own WhatsApp or email app and only reaches us when you press Send there.',
       link: 'Privacy notice',
@@ -940,15 +934,16 @@ const EN: Dictionary = {
       {
         title: 'Enquiry forms',
         body: [
-          'When you send an enquiry, we receive the details you enter: name, company, country, email or phone, type of business and your requirements. We use them only to reply to your enquiry and to handle any supply that follows from it.',
-          'If the form sends your enquiry directly, it is delivered by email to info@familyeggs.sa. The website itself keeps no copy.',
+          'When you send an enquiry, the details you enter — name, company, country, email or phone, type of business and your requirements — are sent to Family Eggs so the company can reply.',
+          'If the form sends your enquiry directly, it is delivered by email to info@familyeggs.sa and the website keeps no copy. Server logs record only whether an enquiry was sent, with its type of business, page and language — never its contents.',
           'If you choose WhatsApp or email instead, the message is sent from your own app, under that service’s terms.',
         ],
       },
       {
         title: 'Spam protection',
         body: [
-          'To block automated spam, the form may use Cloudflare Turnstile, which checks your browser without asking for personal details, and our server may briefly use your IP address to limit repeated submissions.',
+          'When Cloudflare Turnstile is switched on, the form loads it from Cloudflare to check that a person, not a program, is sending the enquiry. Cloudflare receives your IP address and browser information for that check.',
+          'Our server keeps your IP address in memory for about ten minutes, only to limit repeated submissions, and does not write it to any log.',
         ],
       },
       {
@@ -958,22 +953,14 @@ const EN: Dictionary = {
         ],
       },
       {
-        title: 'Your rights',
-        body: [
-          'You can ask us what information we hold from your enquiry, or ask us to correct or delete it, by emailing info@familyeggs.sa, in line with Saudi Arabia’s Personal Data Protection Law.',
-        ],
-      },
-      {
-        title: 'How long we keep enquiries',
-        body: [
-          'Enquiry emails are kept only as long as needed to reply and to manage any business relationship that follows.',
-        ],
+        title: 'Questions about your information',
+        body: ['For questions about this notice or about information you sent us: info@familyeggs.sa.'],
       },
     ],
     analytics: {
       title: 'Analytics',
       on: 'We use Google Analytics to understand how the website is used, such as which pages are visited and when an enquiry is sent. Form contents are never sent to Google Analytics, and advertising features are switched off.',
-      off: 'This website does not use analytics or advertising cookies.',
+      off: 'This website does not use analytics or advertising cookies. The only thing it stores in your browser is your last language choice (in local storage), and that is never sent anywhere.',
     },
     updated: 'Last updated: 19 October 2026',
   },
