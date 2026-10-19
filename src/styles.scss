@@ -59,6 +59,9 @@
   --ink-deep: #1a2716;
   --ink-soft: #35502c;
   --olive-soft: #7d8c45;
+  /* Olive for small text on the --ivory-dim surface: brand olive is 4.4:1
+     there, just under AA; this shade is 5.3:1. */
+  --olive-deep: #5a672b;
   --sage-soft: #d3d7a9;
   --orange-deep: #d97c12;
   --ivory-line: #e4e7dd;
@@ -411,6 +414,233 @@ html.js-motion [data-reveal] {
 
 html.js-motion [data-reveal].is-in {
   transform: none;
+}
+
+/* -------------------------------------------------------- inner pages
+   Shared by the wholesale and international pages. Kept global so the two
+   pages cannot drift apart, and so neither component trips the per-component
+   style budget. */
+
+.pg {
+  padding-block: clamp(3.5rem, 9vw, 6.5rem);
+}
+
+.pg--ink {
+  background: var(--ink);
+  color: var(--on-ink);
+  --accent: var(--orange);
+  --muted: var(--on-ink-dim);
+}
+
+.pg--dim {
+  background: var(--ivory-dim);
+  --accent: var(--olive-deep);
+}
+
+.pg__title {
+  font-size: var(--step-3);
+  font-weight: 700;
+  line-height: var(--lh-display);
+  letter-spacing: var(--track-display);
+  margin-block-end: clamp(1.5rem, 4vw, 2.25rem);
+  max-width: 28ch;
+}
+
+.pg__body {
+  font-size: var(--step-1);
+  line-height: 1.7;
+  color: var(--muted);
+  max-width: 60ch;
+  margin-block-end: clamp(1.75rem, 5vw, 2.5rem);
+}
+
+.pg__cards {
+  display: grid;
+  gap: 1rem;
+
+  > li {
+    padding: 1.4rem 1.5rem;
+    background: var(--ivory);
+    border: 1px solid var(--ivory-line);
+    border-block-start: 3px solid var(--olive);
+    border-radius: var(--radius);
+  }
+
+  h3 {
+    font-size: var(--step-1);
+    margin-block-end: 0.5rem;
+  }
+
+  p {
+    color: var(--on-ivory-dim);
+  }
+}
+
+.pg__facts {
+  margin: 0;
+  display: grid;
+  border-block-start: 1px solid rgb(248 249 246 / 0.18);
+
+  > div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.25rem 1.5rem;
+    padding-block: 1rem;
+    border-block-end: 1px solid rgb(248 249 246 / 0.18);
+  }
+
+  dt {
+    color: var(--sage);
+    font-size: var(--step--1);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  dd {
+    margin: 0;
+    font-size: var(--step-1);
+    font-weight: 600;
+  }
+}
+
+.pg__steps {
+  display: grid;
+  gap: 1.5rem;
+  counter-reset: step;
+
+  > li {
+    counter-increment: step;
+    display: grid;
+    gap: 0.4rem;
+    padding-block-start: 1rem;
+    border-block-start: 2px solid var(--olive);
+
+    &::before {
+      content: '0' counter(step);
+      font-size: var(--step--1);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--olive);
+    }
+  }
+
+  h3 {
+    font-size: var(--step-1);
+  }
+
+  p {
+    color: var(--on-ivory-dim);
+  }
+}
+
+.pg__faq {
+  margin: 0;
+  display: grid;
+  border-block-start: 1px solid var(--ivory-line);
+
+  > div {
+    padding-block: 1.25rem;
+    border-block-end: 1px solid var(--ivory-line);
+  }
+
+  dt {
+    font-size: var(--step-1);
+    font-weight: 600;
+    margin-block-end: 0.4rem;
+  }
+
+  dd {
+    margin: 0;
+    color: var(--on-ivory-dim);
+    max-width: 70ch;
+  }
+}
+
+.pg__ask {
+  display: grid;
+  gap: 0.75rem;
+
+  > li {
+    position: relative;
+    padding-inline-start: 1.6rem;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset-inline-start: 0;
+      top: 0.7em;
+      width: 0.6rem;
+      height: 2px;
+      background: var(--olive);
+    }
+  }
+}
+
+.pg__note {
+  padding: 1.5rem 1.75rem;
+  background: var(--ivory);
+  border-inline-start: 4px solid var(--orange);
+  border-radius: var(--radius);
+  max-width: 70ch;
+
+  h2 {
+    font-size: var(--step-1);
+    margin-block-end: 0.5rem;
+  }
+}
+
+.pg__cross {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  margin-block-start: 1.5rem;
+  font-weight: 600;
+  color: var(--olive-deep);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.pg__prose {
+  max-width: 72ch;
+
+  h2 {
+    font-size: var(--step-2);
+    margin-block: 2.25rem 0.75rem;
+
+    &:first-child {
+      margin-block-start: 0;
+    }
+  }
+
+  p + p {
+    margin-block-start: 0.85rem;
+  }
+}
+
+.pg__updated {
+  margin-block-start: 2.5rem;
+  font-size: var(--step--1);
+  color: var(--on-ivory-dim);
+}
+
+@media (min-width: 720px) {
+  .pg__cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .pg__steps {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+
+  .pg__split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+  }
 }
 
 /* --------------------------------------------------------------- misc */

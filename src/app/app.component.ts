@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
+import { AnalyticsService } from './core/analytics.service';
 import { MotionService } from './core/motion.service';
 
 @Component({
@@ -12,10 +13,13 @@ import { MotionService } from './core/motion.service';
 })
 export class App implements OnInit {
   private readonly motion = inject(MotionService);
+  private readonly analytics = inject(AnalyticsService);
 
   ngOnInit(): void {
     // Unlocks the reveal styles. Until this runs — or if it never runs —
     // every section renders fully visible.
     this.motion.enable();
+    // Browser-only; a no-op during prerender.
+    this.analytics.start();
   }
 }

@@ -5,9 +5,9 @@
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
-    <!-- Arabic defaults for the first paint. SeoService rewrites the title,
-         description, Open Graph, canonical and hreflang for the active
-         language as soon as the route resolves. -->
+    <!-- Arabic defaults only. SeoService rewrites the title, description,
+         robots, Open Graph, canonical, hreflang and JSON-LD for every page
+         during prerender, so the shipped HTML always carries the final tags. -->
     <title>بيض العائلة للتجارة | إنتاج وتوريد بيض سعودي لتجار الجملة</title>
     <meta
       name="description"
@@ -80,47 +80,8 @@
       fetchpriority="high"
     />
 
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "@id": "https://familyeggs.sa/#organization",
-        "name": "شركة بيض العائلة للتجارة",
-        "alternateName": "Family Eggs For Trading Co.",
-        "url": "https://familyeggs.sa/ar",
-        "logo": "https://familyeggs.sa/brand/logo-lockup-720.png",
-        "image": "https://familyeggs.sa/media/farm-day-1200.jpg",
-        "email": "info@familyeggs.sa",
-        "telephone": "+966507488650",
-        "faxNumber": "+966114928138",
-        "address": {
-          "@type": "PostalAddress",
-          "streetAddress": "6621 طريق النهضة، الربوة",
-          "addressLocality": "الرياض",
-          "postalCode": "12823-2778",
-          "addressCountry": "SA"
-        },
-        "location": {
-          "@type": "Place",
-          "name": "مزرعة بيض العائلة — مرات",
-          "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "طريق لبخة المقتسم، ص.ب 12816",
-            "addressLocality": "مرات",
-            "addressRegion": "منطقة الرياض",
-            "addressCountry": "SA"
-          }
-        },
-        "contactPoint": {
-          "@type": "ContactPoint",
-          "contactType": "sales",
-          "telephone": "+966507488650",
-          "email": "info@familyeggs.sa",
-          "areaServed": "SA",
-          "availableLanguage": ["ar", "en"]
-        }
-      }
-    </script>
+    <!-- JSON-LD (Organization, WebSite, WebPage, BreadcrumbList, FAQPage)
+         is written per page by SeoService during prerender. -->
   </head>
   <body>
     <app-root></app-root>

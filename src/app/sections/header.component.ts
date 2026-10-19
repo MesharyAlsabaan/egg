@@ -1,4 +1,4 @@
-import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { DOCUMENT, NgTemplateOutlet, isPlatformBrowser } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -8,11 +8,13 @@ import {
   PLATFORM_ID,
   computed,
   inject,
+  input,
   signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { I18nService } from '../core/i18n/i18n.service';
+import { type PageKey, pagePath } from '../core/pages';
 import { ScrollToService } from '../core/scroll-to.service';
 import { WhatsappService } from '../core/whatsapp.service';
 import { BrandLogoComponent } from '../shared/brand-logo.component';
@@ -23,31 +25,45 @@ import { BrandLogoComponent } from '../shared/brand-logo.component';
  * It used to appear in the hero, on every pack card, in the sticky bar and
  * again at the end of the page. One sticky header carries it now; nothing
  * else on the page asks for the same action.
+ *
+ * Navigation mixes two kinds of link: section anchors on the home page, and
+ * separate pages. On the home page an anchor scrolls in place; anywhere else
+ * it is a real link to `/{lang}#section`, so it works with or without JS.
  */
 @Component({
   selector: 'app-header',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [BrandLogoComponent, RouterLink],
+  imports: [BrandLogoComponent, NgTemplateOutlet, RouterLink],
   template: `
     <header class="bar" [class.is-solid]="solid()" [class.is-open]="open()">
-      <a
-        class="bar__brand"
-        href="#hero"
-        [attr.aria-label]="t().site.name"
-        (click)="jump($event, 'hero')"
-      >
-        <app-brand-logo
-          variant="logo-lockup"
-          [priority]="true"
-          sizes="(min-width: 1100px) 128px, (min-width: 768px) 115px, 105px"
-        />
-      </a>
+      @if (page() === 'home') {
+        <a
+          class="bar__brand"
+          href="#hero"
+          [attr.aria-label]="t().site.name"
+          (click)="jump($event, 'hero')"
+        >
+          <app-brand-logo
+            variant="logo-lockup"
+            [priority]="true"
+            sizes="(min-width: 1100px) 128px, (min-width: 768px) 115px, 105px"
+          />
+        </a>
+      } @else {
+        <a class="bar__brand" [routerLink]="homePath()" [attr.aria-label]="t().site.name">
+          <app-brand-logo
+            variant="logo-lockup"
+            [priority]="true"
+            sizes="(min-width: 1100px) 128px, (min-width: 768px) 115px, 105px"
+          />
+        </a>
+      }
 
       <nav class="bar__nav" [attr.aria-label]="t().footer.nav">
         <ul>
           @for (item of t().nav; track item.id) {
             <li>
-              <a [href]="'#' + item.id" (click)="jump($event, item.id)">{{ item.label }}</a>
+              <ng-container *ngTemplateOutlet="navLink; context: { $implicit: item }" />
             </li>
           }
         </ul>
@@ -55,12 +71,14 @@ import { BrandLogoComponent } from '../shared/brand-logo.component';
 
       <!-- The accessible name has to start with the visible text, otherwise
            "click English" in voice control does not match the control. -->
-      <a class="bar__lang" [routerLink]="'/' + i18n.other()" (click)="close()">
+      <a class="bar__lang" [routerLink]="otherPath()" (click)="close()">
         <span [attr.lang]="i18n.other()">{{ t().site.langToggle }}</span>
         <span class="visually-hidden">{{ t().site.langOther }}</span>
       </a>
 
-      <a class="bar__cta btn btn--primary" [href]="quoteHref()" rel="noopener">{{ t().cta }}</a>
+      <a class="bar__cta btn btn--primary" [href]="quoteHref()" rel="noopener" data-track-area="header">{{
+        t().cta
+      }}</a>
 
       <button
         type="button"
@@ -79,15 +97,36 @@ import { BrandLogoComponent } from '../shared/brand-logo.component';
         <ul>
           @for (item of t().nav; track item.id) {
             <li>
-              <a [href]="'#' + item.id" (click)="jump($event, item.id)">{{ item.label }}</a>
+              <ng-container *ngTemplateOutlet="navLink; context: { $implicit: item }" />
             </li>
           }
         </ul>
-        <a class="btn btn--primary btn--block" [href]="quoteHref()" rel="noopener" (click)="close()">
+        <a
+          class="btn btn--primary btn--block"
+          [href]="quoteHref()"
+          rel="noopener"
+          data-track-area="menu"
+          (click)="close()"
+        >
           {{ t().cta }}
         </a>
       </div>
     }
+
+    <ng-template #navLink let-item>
+      @if (item.page) {
+        <a
+          [routerLink]="path(item.page)"
+          [attr.aria-current]="item.page === page() ? 'page' : null"
+          (click)="close()"
+          >{{ item.label }}</a
+        >
+      } @else if (page() === 'home') {
+        <a [href]="'#' + item.id" (click)="jump($event, item.id)">{{ item.label }}</a>
+      } @else {
+        <a [href]="homePath() + '#' + item.id">{{ item.label }}</a>
+      }
+    </ng-template>
   `,
   styles: `
     .bar {
@@ -152,7 +191,8 @@ import { BrandLogoComponent } from '../shared/brand-logo.component';
       border-block-end: 2px solid transparent;
     }
 
-    .bar__nav a:hover {
+    .bar__nav a:hover,
+    .bar__nav a[aria-current='page'] {
       border-block-end-color: var(--orange);
     }
 
@@ -242,7 +282,7 @@ import { BrandLogoComponent } from '../shared/brand-logo.component';
       border-block-end: 0;
     }
 
-    @media (min-width: 900px) {
+    @media (min-width: 1100px) {
       .bar__nav,
       .bar__cta {
         display: flex;
@@ -263,8 +303,14 @@ import { BrandLogoComponent } from '../shared/brand-logo.component';
   `,
 })
 export class HeaderComponent implements OnInit, OnDestroy {
+  /** The page this header sits on. */
+  readonly page = input<PageKey>('home');
+
   protected readonly i18n = inject(I18nService);
   protected readonly t = this.i18n.t;
+  protected readonly homePath = computed(() => pagePath(this.i18n.lang(), 'home'));
+  /** The same page in the other language, not the other language's home. */
+  protected readonly otherPath = computed(() => pagePath(this.i18n.other(), this.page()));
   private readonly whatsapp = inject(WhatsappService);
   protected readonly quoteHref = computed(() => this.whatsapp.enquiry());
 
@@ -294,6 +340,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.doc.defaultView?.removeEventListener('scroll', this.onScroll);
     cancelAnimationFrame(this.frame);
     this.unlock();
+  }
+
+  protected path(page: PageKey): string {
+    return pagePath(this.i18n.lang(), page);
   }
 
   protected toggle(): void {

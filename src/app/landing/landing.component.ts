@@ -1,11 +1,9 @@
-import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs';
+import { DOCUMENT } from '@angular/common';
+import { ChangeDetectionStrategy, Component, afterNextRender, inject } from '@angular/core';
 
-import type { Lang } from '../core/i18n/dictionary';
 import { I18nService } from '../core/i18n/i18n.service';
-import { SeoService } from '../core/seo.service';
+import { setupPage } from '../core/page';
+import { ScrollToService } from '../core/scroll-to.service';
 import { AutomationComponent } from '../sections/automation.component';
 import { ContactComponent } from '../sections/contact.component';
 import { FacilityComponent } from '../sections/facility.component';
@@ -14,6 +12,7 @@ import { FooterComponent } from '../sections/footer.component';
 import { HeaderComponent } from '../sections/header.component';
 import { HeritageComponent } from '../sections/heritage.component';
 import { HeroComponent } from '../sections/hero.component';
+import { PartnersComponent } from '../sections/partners.component';
 import { ProductsComponent } from '../sections/products.component';
 
 /**
@@ -26,6 +25,7 @@ import { ProductsComponent } from '../sections/products.component';
  *   products  sizes and pack contents, once
  *   heritage  the family history, once
  *   facility  the aerials, each carrying one fact
+ *   partners  signposts to the wholesale and international pages
  *   contact   direct channels, no button
  *   footer    links and identity
  */
@@ -41,6 +41,7 @@ import { ProductsComponent } from '../sections/products.component';
     HeaderComponent,
     HeritageComponent,
     HeroComponent,
+    PartnersComponent,
     ProductsComponent,
   ],
   template: `
@@ -54,6 +55,7 @@ import { ProductsComponent } from '../sections/products.component';
       <app-products />
       <app-heritage />
       <app-facility />
+      <app-partners />
       <app-contact />
     </main>
 
@@ -66,18 +68,20 @@ import { ProductsComponent } from '../sections/products.component';
   `,
 })
 export class LandingComponent {
-  private readonly i18n = inject(I18nService);
-  private readonly seo = inject(SeoService);
-  protected readonly t = this.i18n.t;
-
-  /** 'ar' or 'en', from the route definition. */
-  private readonly routeLang = toSignal(
-    inject(ActivatedRoute).data.pipe(map((data) => data['lang'] as Lang)),
-    { initialValue: 'ar' as Lang },
-  );
+  protected readonly t = inject(I18nService).t;
 
   constructor() {
-    effect(() => this.i18n.apply(this.routeLang()));
-    effect(() => this.seo.update(this.i18n.lang()));
+    setupPage('home');
+
+    // Arriving at `/ar#products` (from an inner page's nav, or a shared link):
+    // the router's scroll-to-top runs after the browser's own jump to the
+    // fragment and undoes it. The router schedules that in a timeout, so a
+    // timeout queued after the first render runs after it and wins.
+    const doc = inject(DOCUMENT);
+    const scroller = inject(ScrollToService);
+    afterNextRender(() => {
+      const id = decodeURIComponent(doc.defaultView?.location.hash.slice(1) ?? '');
+      if (id) setTimeout(() => scroller.go(id), 0);
+    });
   }
 }
