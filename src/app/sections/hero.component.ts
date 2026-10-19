@@ -1,7 +1,9 @@
+import { DOCUMENT } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  afterNextRender,
   effect,
   inject,
   signal,
@@ -72,11 +74,10 @@ import { MotionService } from '../core/motion.service';
           #video
           class="hero__layer hero__video"
           [class.is-ready]="ready() && playing()"
-          [attr.autoplay]="autoplay ? '' : null"
           muted
           loop
           playsinline
-          [attr.preload]="autoplay ? 'metadata' : 'none'"
+          preload="none"
           aria-hidden="true"
           tabindex="-1"
           (canplay)="ready.set(true)"
@@ -239,12 +240,42 @@ export class HeroComponent {
 
   private readonly video = viewChild<ElementRef<HTMLVideoElement>>('video');
 
+  private readonly doc = inject(DOCUMENT);
+
   constructor() {
     effect(() => {
       const element = this.video()?.nativeElement;
       if (element) {
         element.muted = true;
         element.defaultMuted = true;
+      }
+    });
+
+    // The film starts only once the page has finished loading. The prerendered
+    // HTML used to carry `autoplay` (the server cannot see reduced-motion or
+    // data-saver, so it always allowed it), which made the browser fetch the
+    // 3.5-5 MB clip in parallel with the poster — the LCP image. The poster is
+    // on screen from the first paint either way; the video still fades in
+    // over it as soon as it can play, it just no longer competes for the
+    // first second of bandwidth.
+    afterNextRender(() => {
+      if (!this.autoplay) {
+        this.playing.set(false);
+        return;
+      }
+      const view = this.doc.defaultView;
+      const start = () => {
+        const element = this.video()?.nativeElement;
+        if (!element || !element.paused) {
+          return;
+        }
+        element.preload = 'auto';
+        void element.play().catch(() => this.playing.set(false));
+      };
+      if (this.doc.readyState === 'complete') {
+        start();
+      } else {
+        view?.addEventListener('load', start, { once: true });
       }
     });
   }
