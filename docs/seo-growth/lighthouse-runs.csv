@@ -1,0 +1,54 @@
+run,performance,accessibility,best_practices,seo,lcp_ms,fcp_ms,tbt_ms,cls,speed_index_ms,server_response_ms,total_kb
+base-ar-desktop-1,100,100,100,100,647,445,0,0.0,445,2,5224
+base-ar-mobile-1,92,100,100,100,3173,1965,20,0,2230,3,3891
+base-ar-mobile-2,92,100,100,100,3160,1957,20,0,1957,2,3891
+base-ar-mobile-3,92,100,100,100,3158,1955,20,0,1955,2,3891
+base-en-desktop-1,100,100,100,100,647,445,0,0.0,445,3,5224
+base-en-mobile-1,92,100,100,100,3158,1955,26,0.032,1955,2,3891
+base-en-mobile-2,92,100,100,100,3159,1956,20,0.032,1956,2,3891
+base-en-mobile-3,92,100,100,100,3158,1955,19,0.032,1955,8,3891
+live-ar-desktop-1,99,100,100,100,546,509,0,0.001,1271,339,5245
+live-ar-mobile-1,99,100,100,100,1853,1197,18,0.0,1948,366,3926
+live-en-desktop-1,100,100,100,100,440,440,0,0.015,928,324,5241
+live-en-mobile-1,81,100,100,100,3861,2511,20,0,5173,316,3908
+new-ar-desktop-1,100,100,100,100,647,445,0,0.0,445,2,5243
+new-ar-international-desktop-1,100,100,100,100,605,445,0,0.0,445,2,375
+new-ar-international-mobile-1,95,100,100,100,2724,1955,14,0.0,1955,4,347
+new-ar-mobile-1,93,100,100,100,3021,1960,26,0,1960,8,3910
+new-ar-mobile-2,93,100,100,100,3017,1958,26,0,1958,3,3910
+new-ar-mobile-3,93,100,100,100,3011,1956,24,0,1956,3,3910
+new-ar-wholesale-desktop-1,100,100,100,100,604,444,0,0.0,444,2,376
+new-ar-wholesale-mobile-1,90,100,100,100,3356,2203,18,0.0,2203,2,347
+new-en-desktop-1,100,96,100,100,650,447,0,0.015,447,3,5243
+new-en-international-desktop-1,100,96,100,100,606,406,0,0.001,406,3,375
+new-en-international-mobile-1,95,96,100,100,2709,1954,14,0,1954,3,346
+new-en-mobile-1,93,96,100,100,3010,1955,27,0.032,1955,3,3910
+new-en-mobile-2,93,96,100,100,3010,1955,24,0,1955,3,3910
+new-en-mobile-3,93,96,100,100,3014,1957,28,0.032,1957,2,3910
+new-en-wholesale-desktop-1,100,96,100,100,604,404,0,0.014,404,2,376
+new-en-wholesale-mobile-1,95,96,100,100,2710,1955,16,0,1955,2,347
+fix-ar-wholesale (a11y re-run after contrast fix),,100
+fix-ar (a11y re-run after contrast fix),,100
+fix-en-international (a11y re-run after contrast fix),,100
+fix-en-wholesale (a11y re-run after contrast fix),,100
+fix-en (a11y re-run after contrast fix),,100
+"v2-ar-desktop-1 (final, after video deferral)",100,100,100,100,646,444,0,0.0,444,2,5243
+"v2-ar-mobile-1 (final, after video deferral)",93,100,100,100,3009,1955,27,0,1955,2,3910
+"v2-ar-mobile-2 (final, after video deferral)",93,100,100,100,3022,1955,28,0,1955,2,3910
+"v2-ar-mobile-3 (final, after video deferral)",93,100,100,100,3009,1954,26,0,1954,2,3910
+"v2-en-desktop-1 (final, after video deferral)",100,100,100,100,646,444,0,0.0,444,2,5243
+"v2-en-mobile-1 (final, after video deferral)",93,100,100,100,3019,1954,27,0.032,1954,2,3910
+"v2-en-mobile-2 (final, after video deferral)",93,100,100,100,3020,1954,26,0.032,1954,2,3910
+"v2-en-mobile-3 (final, after video deferral)",93,100,100,100,3021,1954,26,0.032,1954,2,3910
+base-ar-1 (A/B under external CPU load; compare base vs new only),49,,,,3645,2758,24306,0,7126,17,3891
+base-ar-2 (A/B under external CPU load; compare base vs new only),49,,,,3657,2666,23531,0,6821,2,3891
+base-ar-3 (A/B under external CPU load; compare base vs new only),49,,,,3644,2747,24839,0,7202,2,3891
+base-en-1 (A/B under external CPU load; compare base vs new only),50,,,,3526,2834,21896,0,6512,2,3891
+base-en-2 (A/B under external CPU load; compare base vs new only),50,,,,3567,2651,25066,0,6901,7,3891
+new-ar-1 (A/B under external CPU load; compare base vs new only),49,,,,3699,2650,22956,0,7069,2,3898
+new-ar-2 (A/B under external CPU load; compare base vs new only),48,,,,3691,2781,22864,0,7452,0,3898
+new-ar-3 (A/B under external CPU load; compare base vs new only),49,,,,3624,2541,23128,0,7527,0,3898
+new-ari-1 (A/B under external CPU load; compare base vs new only),44,,,,4135,2806,27993,0.049,8382,1,338
+new-en-1 (A/B under external CPU load; compare base vs new only),51,,,,3489,2544,22985,0,6954,0,3897
+new-en-2 (A/B under external CPU load; compare base vs new only),49,,,,3645,2765,24190,0,7250,0,3897
+new-enw-1 (A/B under external CPU load; compare base vs new only),53,,,,3512,2552,20546,0,5305,2,338

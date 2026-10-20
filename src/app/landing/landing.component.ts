@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router, Scroll } from '@angular/router';
+import { filter, take } from 'rxjs';
 
-import type { Lang } from '../core/i18n/dictionary';
 import { I18nService } from '../core/i18n/i18n.service';
-import { SeoService } from '../core/seo.service';
+import { setupPage } from '../core/page';
+import { ScrollToService } from '../core/scroll-to.service';
 import { AutomationComponent } from '../sections/automation.component';
 import { ContactComponent } from '../sections/contact.component';
 import { FacilityComponent } from '../sections/facility.component';
@@ -14,6 +14,7 @@ import { FooterComponent } from '../sections/footer.component';
 import { HeaderComponent } from '../sections/header.component';
 import { HeritageComponent } from '../sections/heritage.component';
 import { HeroComponent } from '../sections/hero.component';
+import { PartnersComponent } from '../sections/partners.component';
 import { ProductsComponent } from '../sections/products.component';
 
 /**
@@ -26,6 +27,7 @@ import { ProductsComponent } from '../sections/products.component';
  *   products  sizes and pack contents, once
  *   heritage  the family history, once
  *   facility  the aerials, each carrying one fact
+ *   partners  signposts to the wholesale and international pages
  *   contact   direct channels, no button
  *   footer    links and identity
  */
@@ -41,6 +43,7 @@ import { ProductsComponent } from '../sections/products.component';
     HeaderComponent,
     HeritageComponent,
     HeroComponent,
+    PartnersComponent,
     ProductsComponent,
   ],
   template: `
@@ -54,6 +57,7 @@ import { ProductsComponent } from '../sections/products.component';
       <app-products />
       <app-heritage />
       <app-facility />
+      <app-partners />
       <app-contact />
     </main>
 
@@ -66,18 +70,27 @@ import { ProductsComponent } from '../sections/products.component';
   `,
 })
 export class LandingComponent {
-  private readonly i18n = inject(I18nService);
-  private readonly seo = inject(SeoService);
-  protected readonly t = this.i18n.t;
-
-  /** 'ar' or 'en', from the route definition. */
-  private readonly routeLang = toSignal(
-    inject(ActivatedRoute).data.pipe(map((data) => data['lang'] as Lang)),
-    { initialValue: 'ar' as Lang },
-  );
+  protected readonly t = inject(I18nService).t;
 
   constructor() {
-    effect(() => this.i18n.apply(this.routeLang()));
-    effect(() => this.seo.update(this.i18n.lang()));
+    setupPage('home');
+
+    // Arriving at `/ar#products` (from an inner page's nav, or a shared link):
+    // with anchor scrolling off, the router answers its own Scroll event by
+    // scrolling to the top, undoing the browser's jump to the fragment. That
+    // event carries the fragment. `Router.events` re-emits the internal
+    // stream, so this subscriber runs BEFORE the router's own scroll handler
+    // within the same synchronous emission; a microtask puts our scroll after
+    // it, every time — no timers to race.
+    const scroller = inject(ScrollToService);
+    inject(Router)
+      .events.pipe(
+        filter((e): e is Scroll => e instanceof Scroll && !!e.anchor),
+        take(1),
+        takeUntilDestroyed(),
+      )
+      .subscribe((e) =>
+        queueMicrotask(() => scroller.go(decodeURIComponent(e.anchor!), { instant: true })),
+      );
   }
 }

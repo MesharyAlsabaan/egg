@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { CONTACT } from '../core/i18n/dictionary';
 import { I18nService } from '../core/i18n/i18n.service';
+import { type PageKey, pagePath } from '../core/pages';
 import { ScrollToService } from '../core/scroll-to.service';
 import { WhatsappService } from '../core/whatsapp.service';
 import { BrandLogoComponent } from '../shared/brand-logo.component';
@@ -20,7 +21,7 @@ import { BrandLogoComponent } from '../shared/brand-logo.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [BrandLogoComponent, RouterLink],
   template: `
-    <footer class="foot">
+    <footer class="foot" data-track-area="footer">
       <div class="foot__inner">
         <div class="foot__brand">
           <app-brand-logo variant="logo-lockup" sizes="(min-width: 1100px) 190px, (min-width: 768px) 170px, 155px" />
@@ -32,7 +33,13 @@ import { BrandLogoComponent } from '../shared/brand-logo.component';
           <ul>
             @for (item of t().nav; track item.id) {
               <li>
-                <a [href]="'#' + item.id" (click)="jump($event, item.id)">{{ item.label }}</a>
+                @if (item.page) {
+                  <a [routerLink]="path(item.page)">{{ item.label }}</a>
+                } @else if (page() === 'home') {
+                  <a [href]="'#' + item.id" (click)="jump($event, item.id)">{{ item.label }}</a>
+                } @else {
+                  <a [href]="path('home') + '#' + item.id">{{ item.label }}</a>
+                }
               </li>
             }
           </ul>
@@ -75,7 +82,8 @@ import { BrandLogoComponent } from '../shared/brand-logo.component';
 
       <div class="foot__bottom">
         <p>© {{ year }} {{ t().site.name }} — {{ t().site.rights }}</p>
-        <a class="foot__lang" [routerLink]="'/' + i18n.other()" [attr.lang]="i18n.other()">
+        <a class="foot__lang" [routerLink]="path('privacy')">{{ t().privacy.title }}</a>
+        <a class="foot__lang" [routerLink]="otherPath()" [attr.lang]="i18n.other()">
           {{ t().site.langToggle }}
         </a>
       </div>
@@ -188,13 +196,21 @@ import { BrandLogoComponent } from '../shared/brand-logo.component';
   `,
 })
 export class FooterComponent {
+  /** The page this footer sits on. */
+  readonly page = input<PageKey>('home');
+
   protected readonly c = CONTACT;
   protected readonly i18n = inject(I18nService);
+  protected readonly otherPath = computed(() => pagePath(this.i18n.other(), this.page()));
   protected readonly t = this.i18n.t;
   protected readonly year = new Date().getFullYear();
   private readonly scroller = inject(ScrollToService);
   private readonly whatsapp = inject(WhatsappService);
   protected readonly whatsappHref = computed(() => this.whatsapp.enquiry());
+
+  protected path(page: PageKey): string {
+    return pagePath(this.i18n.lang(), page);
+  }
 
   protected jump(event: Event, id: string): void {
     event.preventDefault();

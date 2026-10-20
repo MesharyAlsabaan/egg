@@ -14,7 +14,7 @@ import { RevealDirective } from '../shared/reveal.directive';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RevealDirective],
   template: `
-    <section class="con" id="contact" aria-labelledby="contact-title">
+    <section class="con" id="contact" aria-labelledby="contact-title" data-track-area="contact">
       <div class="con__inner">
         <header class="con__head" appReveal>
           <p class="eyebrow">{{ t().contact.eyebrow }}</p>

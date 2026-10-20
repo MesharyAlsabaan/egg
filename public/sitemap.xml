@@ -1,8 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<!-- Canonical, indexable pages only, each with its hreflang set.
+     The site root (/) is a 301 to /ar and is deliberately absent.
+     Update <lastmod> only when a page's content meaningfully changes.
+     tools/check-seo.mjs checks this file against the built pages. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://familyeggs.sa/</loc>
-    <changefreq>monthly</changefreq>
-    <priority>1.0</priority>
+    <loc>https://familyeggs.sa/ar</loc>
+    <lastmod>2026-10-19</lastmod>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://familyeggs.sa/ar" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://familyeggs.sa/en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://familyeggs.sa/ar" />
+  </url>
+  <url>
+    <loc>https://familyeggs.sa/en</loc>
+    <lastmod>2026-10-19</lastmod>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://familyeggs.sa/ar" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://familyeggs.sa/en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://familyeggs.sa/ar" />
+  </url>
+  <url>
+    <loc>https://familyeggs.sa/ar/wholesale</loc>
+    <lastmod>2026-10-19</lastmod>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://familyeggs.sa/ar/wholesale" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://familyeggs.sa/en/wholesale" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://familyeggs.sa/ar/wholesale" />
+  </url>
+  <url>
+    <loc>https://familyeggs.sa/en/wholesale</loc>
+    <lastmod>2026-10-19</lastmod>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://familyeggs.sa/ar/wholesale" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://familyeggs.sa/en/wholesale" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://familyeggs.sa/ar/wholesale" />
+  </url>
+  <url>
+    <loc>https://familyeggs.sa/ar/international</loc>
+    <lastmod>2026-10-19</lastmod>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://familyeggs.sa/ar/international" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://familyeggs.sa/en/international" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://familyeggs.sa/en/international" />
+  </url>
+  <url>
+    <loc>https://familyeggs.sa/en/international</loc>
+    <lastmod>2026-10-19</lastmod>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://familyeggs.sa/ar/international" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://familyeggs.sa/en/international" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://familyeggs.sa/en/international" />
   </url>
 </urlset>

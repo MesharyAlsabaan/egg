@@ -15,7 +15,12 @@ import { DOCUMENT, Injectable, inject } from '@angular/core';
 export class ScrollToService {
   private readonly doc = inject(DOCUMENT);
 
-  go(id: string): void {
+  /**
+   * `instant` is for arriving on a page at a #fragment: browsers jump there
+   * without animating, and a smooth scroll started while the page is still
+   * hydrating can be cancelled part-way by the layout work going on.
+   */
+  go(id: string, { instant = false }: { instant?: boolean } = {}): void {
     const target = this.doc.getElementById(id);
     if (!target) {
       return;
@@ -23,7 +28,12 @@ export class ScrollToService {
 
     const reduced =
       this.doc.defaultView?.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-    target.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+    // 'instant', not 'auto': 'auto' defers to the stylesheet, which sets
+    // `scroll-behavior: smooth` on <html>, so it would still animate.
+    target.scrollIntoView({
+      behavior: instant ? 'instant' : reduced ? 'auto' : 'smooth',
+      block: 'start',
+    });
 
     // Move keyboard focus with the view. Sections are not focusable by
     // default, so give it a temporary tabindex and take it back afterwards.
