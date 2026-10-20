@@ -372,7 +372,7 @@ const AR: Dictionary = {
     solarAlt: 'حقل الألواح الشمسية داخل الموقع، وصفوف إضافية قيد التركيب',
     trucksAlt: 'ساحة التحميل: شاحنة مقطورة وصهريج ومركبات خدمة تحت المظلات',
     solarNote: 'طاقة شمسية داخل الموقع',
-    trucksNote: 'أسطول جاهز للتوصيل لأي مكان يطلبه العميل',
+    trucksNote: 'أسطول توصيل يعمل من المزرعة',
   },
   partners: {
     eyebrow: 'التوريد التجاري',
@@ -729,7 +729,7 @@ const EN: Dictionary = {
     solarAlt: 'The on-site solar array, with further rows under installation',
     trucksAlt: 'The loading yard: a trailer, a tanker and service vehicles under the canopies',
     solarNote: 'On-site solar power',
-    trucksNote: 'A fleet ready to deliver wherever the customer needs',
+    trucksNote: 'A delivery fleet operating from the farm',
   },
   partners: {
     eyebrow: 'Commercial supply',

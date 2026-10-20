@@ -17,7 +17,7 @@ The project already had a sourcing rule (`dictionary.ts`, `docs/DELIVERY-REPORT.
 | Packs | Tray 30; carton 360 (12 × 30) | Carton artwork | Published |
 | Shelf life / storage / RH | 3 months; 4–18 °C; 75–80% | Carton artwork | Published |
 | Heritage | 60 years | Owner-provided | Published (pre-existing) |
-| Delivery fleet | "A fleet ready to deliver wherever the customer needs" | Owner-approved copy | Home page only (pre-existing). Not restated on the new pages, which say only that delivery location and timing are agreed per order |
+| Delivery fleet | "A delivery fleet operating from the farm" (was "…wherever the customer needs") | Owner-approved copy, coverage wording neutralised 2026-10-20 | Home page only (pre-existing). Not restated on the new pages, which say only that delivery location and timing are agreed per order |
 | Gram weights per grade | — | **Not available** | Not published |
 | Certifications, licences | — | **Not available** | Not published |
 | Minimum order quantity | — | **Not available** | Not published |
@@ -45,7 +45,7 @@ Every statement added on the new pages was checked against the fact register (§
 
 **Not claimed anywhere:** delivery coverage, minimum order, certifications, export approval, existing export markets, prices.
 
-**One pre-existing home-page line** is the owner's own: "A fleet ready to deliver wherever the customer needs" (facility section). It is unchanged, but "wherever" reads as unlimited coverage. Consider "A delivery fleet at the farm" until coverage is confirmed.
+**Pre-existing home-page caption corrected for release (2026-10-20, owner-authorised):** "A fleet ready to deliver wherever the customer needs" / «أسطول جاهز للتوصيل لأي مكان يطلبه العميل» implied unlimited coverage. It now reads "A delivery fleet operating from the farm" / «أسطول توصيل يعمل من المزرعة», which describes the loading-yard photo it captions.
 
 ### Still needs owner sign-off
 
